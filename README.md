@@ -37,7 +37,7 @@ jira.auth.basic=Basic TW9ya292a0E6bXlTdXBlclBhc3M=
 *Required*\
 Type: `String`
 
-String to search test cases in issue comments. It is used as `comment.startsWith("\${jira.comment.test.case.start}")`\
+String to search test cases in issue comments, used as `comment.startsWith("\${jira.comment.test.case.start}")`\
 For example: 
 ```
 jira.comment.test.case.start=Сценарий для тестирования на препроде
@@ -48,7 +48,7 @@ jira.comment.test.case.start=Сценарий для тестирования н
 *Required*\
 Type: `String`
 
-String to search deploy instructions in issue comments. It is used as `comment.startsWith("\${jira.comment.deploy.instruction.start}")`\
+String to search deploy instructions in issue comments, used as `comment.startsWith("\${jira.comment.deploy.instruction.start}")`\
 For example: 
 ```
 jira.comment.deploy.instruction.start=Инструкция по установке
