@@ -1,0 +1,13 @@
+server:
+  port: 8181
+
+jira:
+  auth:
+    basic: "Basic TW9ya292a0E6bXlTdXBlclBhc3M="
+  comment:
+    test:
+      case:
+        start: "Сценарий для тестирования на препроде"
+    deploy:
+      instruction:
+        start: "Инструкция по установке"
