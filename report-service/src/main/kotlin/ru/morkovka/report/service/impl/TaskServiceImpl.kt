@@ -20,6 +20,9 @@ import java.util.stream.Collectors
 
 @Service
 class TaskServiceImpl(
+    @Value("\${jira.url}")
+    private val jiraUrl: String,
+
     @Value("\${jira.auth.basic}")
     private val jiraAuthBasic: String,
 
@@ -30,7 +33,7 @@ class TaskServiceImpl(
     private var taskCommentDeployInstructionsStart: String
 ) : TaskService {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
-    val jiraUrl: String = "https://jira.unidata-platform.com/rest/api/latest"
+    val jiraUrlRest: String = "$jiraUrl/rest/api/latest"
     val restTemplate: RestTemplate = RestTemplateBuilder().errorHandler(DefaultResponseErrorHandler()).build()
     private val headers = HttpHeaders()
 
@@ -48,7 +51,7 @@ class TaskServiceImpl(
      */
     override fun getTaskByJiraKey(jiraKey: String): Task {
 
-        val builder = UriComponentsBuilder.fromHttpUrl("$jiraUrl/issue/$jiraKey")
+        val builder = UriComponentsBuilder.fromHttpUrl("$jiraUrlRest/issue/$jiraKey")
             .queryParam("fields", "summary")
             .queryParam("fields", "status")
             .queryParam("fields", "description")
@@ -78,7 +81,7 @@ class TaskServiceImpl(
      */
     override fun getTasksByJiraRelease(jiraFixVersion: String): MutableList<Task> {
 
-        val builder = UriComponentsBuilder.fromHttpUrl("$jiraUrl/search")
+        val builder = UriComponentsBuilder.fromHttpUrl("$jiraUrlRest/search")
 
         val requestJson = "{\n" +
                 "    \"jql\": \"project=DM AND fixVersion=$jiraFixVersion\",\n" +

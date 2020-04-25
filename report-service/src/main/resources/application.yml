@@ -2,6 +2,7 @@ server:
   port: 8181
 
 jira:
+  url: "https://jira.unidata-platform.com"
   auth:
     basic: "Basic TW9ya292a0E6bXlTdXBlclBhc3M="
   comment:

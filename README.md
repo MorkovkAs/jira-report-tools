@@ -21,11 +21,12 @@ $ ./gradlew bootRun
 
 ## Modules
 1. `report-service` containing server side logic such as request processing, Jira integration, generating release notes. [Details](report-service/README.md)
-2. `report-service-ui` containing client side logic. [Details](report-service/README.md)
+2. `report-service-ui` containing client side logic. [Details](report-service-ui/README.md)
 
 ## To do list
 * [x] commit `report-service` package with server side
-* [ ] commit `report-service-ui` package with client side on Vue.js
+* [x] commit `report-service-ui` package with basic implementation of client side on Vue.js
+* [ ] upgrade client side to support sending requests of all types
 * [ ] some cool things:)
 
 ## Thanks!

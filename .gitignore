@@ -4,8 +4,3 @@
 /build/
 /gradle/
 /logs/
-/report-service/src/test/kotlin/ru/morkovka/report/requestExample/service/results/
-
-#report-service module
-/report-service/build/
-/report-service/logs/

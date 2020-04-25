@@ -10,6 +10,13 @@ Fill your Jira auth data `jira.auth.basic` in `application.yml` file. See [detai
 
 ### application.yml
 
+##### jira.url
+
+*Required*\
+Type: `String`
+
+Url for Jira Software.
+
 ##### jira.auth.basic
 
 *Required*\
