@@ -8,73 +8,25 @@ Clone the source locally:
 ```
 $ git clone https://github.com/MorkovkAs/jira-report-tools/
 ```
-Fill your Jira auth data `jira.auth.basic` in `application.yml` file. See [details](#jiraauthbasic) below
+Fill your Jira auth data `jira.auth.basic` in `report-service/application.yml` file. See [details](report-service/README.md#jiraauthbasic) in `report-service` module.
+
+Check Gradle is installed and configured
 
 Build and install with gradle
 ```
 $ cd jira-report-tools/
-$ gradlew build
-$ gradlew bootRun
+$ ./gradlew build
+$ ./gradlew bootRun
 ```
 
-## Params
+## Modules
+1. `report-service` containing server side logic such as request processing, Jira integration, generating release notes. [Details](report-service/README.md)
+2. `report-service-ui` containing client side logic. [Details](report-service/README.md)
 
-### application.yml
-
-##### jira.auth.basic
-
-*Required*\
-Type: `String`
-
-Your auth data for Jira. It should be the result of `"Basic " + base64 (login + ":" + password)`\
-For example: 
-```
-jira.auth.basic=Basic TW9ya292a0E6bXlTdXBlclBhc3M=
-```
-
-##### jira.comment.test.case.start
-
-*Required*\
-Type: `String`
-
-String to search test cases in issue comments, used as `comment.startsWith("\${jira.comment.test.case.start}")`\
-For example: 
-```
-jira.comment.test.case.start=Сценарий для тестирования на препроде
-```
-
-##### jira.comment.deploy.instruction.start
-
-*Required*\
-Type: `String`
-
-String to search deploy instructions in issue comments, used as `comment.startsWith("\${jira.comment.deploy.instruction.start}")`\
-For example: 
-```
-jira.comment.deploy.instruction.start=Инструкция по установке
-```
-
-## Usage
-
-There are examples of common requests in `jira-report-tools/src/test/kotlin/ru/morkovka/report/requestExample/service/`
-
-##### Get issue by issueIdOrKey
-
-Type: `GET`\
-Url: `/task/byKey?jiraKey={issueIdOrKey}`\
-Returns a representation of the issue for the given issue key.
-
-##### Get issues by fixVersion
-
-Type: `GET`\
-Url: `/task/byRelease?jiraRelease={fixVersion}`\
-Returns a list of representation of the issues for the given fixVersion.
-
-##### Get simple instructions for issues by fixVersion
-
-Type: `GET`\
-Url: `/task/testingInfoByRelease?jiraRelease={fixVersion}`\
-Returns test cases and deploy instructions of the issues for the given fixVersion.
+## To do list
+* [x] commit `report-service` package with server side
+* [ ] commit `report-service-ui` package with client side on Vue.js
+* [ ] some cool things:)
 
 ## Thanks!
 Any questions or problems give me a shout on email avklimakov@gmail.com
