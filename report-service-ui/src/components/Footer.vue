@@ -1,6 +1,6 @@
 <template>
   <div class="Footer">
-    <h3>&copy; 2020 Anton Klimakov</h3>
+    <h4>&copy; 2020 Anton Klimakov</h4>
     <ul>
       <li><a href="https://github.com/MorkovkAs/jira-report-tools" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
@@ -9,10 +9,7 @@
 
 <script>
 export default {
-  name: 'Footer',
-  props: {
-    msg: String
-  }
+  name: 'Footer'
 }
 </script>
 

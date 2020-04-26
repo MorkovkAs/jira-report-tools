@@ -30,7 +30,8 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
         logger.warn("HttpClientErrorException: statusCode [${ex.statusCode}], statusText [${ex.statusText}], body: [${ex.responseBodyAsString}]")
 
         when (ex.statusCode) {
-            HttpStatus.UNAUTHORIZED, HttpStatus.BAD_REQUEST, HttpStatus.NOT_FOUND, HttpStatus.UNSUPPORTED_MEDIA_TYPE -> {
+            HttpStatus.FORBIDDEN, HttpStatus.UNAUTHORIZED, HttpStatus.BAD_REQUEST, HttpStatus.NOT_FOUND, HttpStatus.UNSUPPORTED_MEDIA_TYPE
+            -> {
                 logger.warn(ex.printStackTrace())
                 return buildResponseEntity(ApiError(status = ex.statusCode, message = ex.responseBodyAsString, ex = ex))
             }

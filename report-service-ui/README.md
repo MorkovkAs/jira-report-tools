@@ -1,6 +1,8 @@
-# report-service-ui
+# Jira report tool service UI
 
-It is a Vue client for getting Jira issues, getting reports on them, getting release notes.
+It is a Vue.js client for getting Jira issues, getting reports on them, getting release notes.
+
+![](src/assets/Screenshot_1.jpg)
 
 ## Project setup
 ```
@@ -21,9 +23,6 @@ npm run build
 ```
 npm run lint
 ```
-
-### Example
-![](src/assets/Screenshot_1.jpg)
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
