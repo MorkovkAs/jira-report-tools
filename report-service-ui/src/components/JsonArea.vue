@@ -14,7 +14,7 @@
             prettyJsonData: function () {
                 let json = this.jsonText;
                 // replacing escaped symbols from Jira error
-                if (json.errorText && json.errorText.message) {
+                if (json.errorText && json.errorText.message && typeof(json.errorText.message) !== 'object') {
                     let message = json.errorText.message;
                     json.errorText.message = JSON.parse(message.replace(/\\/g, ''));
                 }

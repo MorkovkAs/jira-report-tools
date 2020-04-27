@@ -49,9 +49,30 @@
                 requestTypeSelected: '',
                 requestKey: '',
                 requestOptions: [
-                    {text: 'Get issue', key: 'getIssue', searchParam: 'Enter issue key', url: 'http://localhost:8181/task/byKey?jiraKey='},
-                    {text: 'Get release issues', key: 'getIssueInRelease', searchParam: 'Enter release', url: 'http://localhost:8181/task/byRelease?jiraRelease='},
-                    {text: 'Get release notes', key: 'getReleaseNotes', searchParam: 'Enter release', url: 'http://localhost:8181/task/testingInfoByRelease?jiraRelease='}
+                    {
+                        text: 'Get issue',
+                        key: 'getIssue',
+                        searchParam: 'Enter issue key',
+                        url: '/task/byKey?jiraKey='
+                    },
+                    {
+                        text: 'Get issues by jql',
+                        key: 'getIssueByJql',
+                        searchParam: 'Enter jql string',
+                        url: '/task/byJql?jql='
+                    },
+                    {
+                        text: 'Get release issues',
+                        key: 'getIssueInRelease',
+                        searchParam: 'Enter release',
+                        url: '/task/byRelease?jiraRelease='
+                    },
+                    {
+                        text: 'Get release notes',
+                        key: 'getReleaseNotes',
+                        searchParam: 'Enter release',
+                        url: '/task/testingInfoByRelease?jiraRelease='
+                    }
                 ],
                 response: null,
                 error: {
@@ -82,22 +103,19 @@
                 this.response = null;
 
                 axios
-                    .get(requestUrl + this.requestKey)
+                    .get('http://localhost:8181' + requestUrl + this.requestKey)
                     .then(response => {
                         this.response = response.data;
                         this.errored = false;
                     })
                     .catch(error => {
-                        if(error.response) {
+                        if (error.response) {
                             this.error.errorCode = error.response.status;
                             this.error.errorText = error.response.data;
                             this.errorStatus = error.response.data.status;
 
                             if (error.response.status === 401 || error.response.status === 403) {
                                 this.errorStatus = 'Authentication failed'
-                            }
-                            if (error.response.status === 404) {
-                                //TODO errors catching
                             }
                         } else {
                             this.error.errorCode = 523;

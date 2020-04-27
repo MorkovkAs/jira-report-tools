@@ -3,6 +3,7 @@ server:
 
 jira:
   url: "https://jira.unidata-platform.com"
+  project: "DM"
   auth:
     basic: "Basic TW9ya292a0E6bXlTdXBlclBhc3M="
   comment:

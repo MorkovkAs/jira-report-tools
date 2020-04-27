@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import ru.morkovka.report.entity.Task
 import ru.morkovka.report.entity.dto.SearchResultDto
-import ru.morkovka.report.entity.dto.TaskDto
 import ru.morkovka.report.entity.mapper.TaskMapper.Companion.getTask
 import ru.morkovka.report.service.TaskService
 import java.util.*
@@ -22,6 +21,9 @@ import java.util.stream.Collectors
 class TaskServiceImpl(
     @Value("\${jira.url}")
     private val jiraUrl: String,
+
+    @Value("\${jira.project}")
+    private val jiraProject: String,
 
     @Value("\${jira.auth.basic}")
     private val jiraAuthBasic: String,
@@ -44,58 +46,14 @@ class TaskServiceImpl(
     }
 
     /**
-     *  Search and minimize a representation of the issue for the given issue key
+     *  Search issues by the given jql (Jira query language) search
      *
-     *  @param jiraKey the code of the issue to search by. For example "DM-915"
-     *  @return the issue with summary, status, description, fixVersions, comments
-     */
-    override fun getTaskByJiraKey(jiraKey: String): Task {
-
-        val builder = UriComponentsBuilder.fromHttpUrl("$jiraUrlRest/issue/$jiraKey")
-            .queryParam("fields", "summary")
-            .queryParam("fields", "status")
-            .queryParam("fields", "description")
-            .queryParam("fields", "fixVersions")
-            .queryParam("fields", "comment")
-
-        val entity = HttpEntity<Any>(headers)
-
-        val response: ResponseEntity<String> = restTemplate.exchange(
-            builder.toUriString(),
-            HttpMethod.GET,
-            entity,
-            String::class.java
-        )
-
-        logger.info("getTaskByJiraKey [jiraKey = $jiraKey]: jira search completed")
-        val task = getTask(Gson().fromJson(response.body, TaskDto::class.java))
-        logger.info("getTaskByJiraKey [jiraKey = $jiraKey]: casting to Task completed")
-        return task
-    }
-
-    /**
-     *  Search and minimize representations of all the issues for the given fix version
-     *
-     *  @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
+     *  @param jqlString the string in jql (Jira query language) to search by. For example "project = DM AND fixVersion = 1.31.1"
      *  @return the list of issues with summary, status, description, fixVersions, comments
      */
-    override fun getTasksByJiraRelease(jiraFixVersion: String): MutableList<Task> {
-
+    override fun getTasksByJqlString(jqlString: String): MutableList<Task> {
         val builder = UriComponentsBuilder.fromHttpUrl("$jiraUrlRest/search")
-
-        val requestJson = "{\n" +
-                "    \"jql\": \"project=DM AND fixVersion=$jiraFixVersion\",\n" +
-                "    \"startAt\": 0,\n" +
-                "    \"maxResults\": 15,\n" +
-                "    \"fields\": [\n" +
-                "        \"summary\",\n" +
-                "        \"status\",\n" +
-                "        \"description\",\n" +
-                "        \"fixVersions\",\n" +
-                "        \"comment\"\n" +
-                "    ]\n" +
-                "}"
-
+        val requestJson = getRequestJsonForJqlQuery(jqlString)
         val entity = HttpEntity<Any>(requestJson, headers)
 
         val response: ResponseEntity<String> = restTemplate.exchange(
@@ -105,11 +63,42 @@ class TaskServiceImpl(
             String::class.java
         )
 
-        logger.info("getTasksByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
+        logger.info("getTasksByJqlString [jqlString = $jqlString]: jira search completed")
         val searchResultDto = Gson().fromJson(response.body, SearchResultDto::class.java)
         val taskDtoList = searchResultDto.issues
         val taskList = taskDtoList.stream().filter(Objects::nonNull).map { getTask(it) }.collect(Collectors.toList())
-        logger.info("getTasksByJiraRelease [jiraFixVersion = $jiraFixVersion]: casting to List<Task> completed")
+        logger.info("getTasksByJqlString [jqlString = $jqlString]: casting to List<Task> completed")
+
+        return taskList
+    }
+
+    /**
+     *  Search and minimize a representation of the issue for the given issue key
+     *
+     *  @param jiraKey the code of the issue to search by. For example "DM-915"
+     *  @return the issue with summary, status, description, fixVersions, comments
+     */
+    override fun getTaskByJiraKey(jiraKey: String): Task {
+        val taskList = getTasksByJqlString("issueKey = $jiraKey")
+
+        // We do know that there is only 1 element in taskList.
+        // If not, a HttpClientErrorException has occurred because of 404 error from Jira rest
+        val task = taskList[0]
+        logger.info("getTaskByJiraKey [jiraKey = $jiraKey]: jira search completed")
+
+        return task
+    }
+
+    /**
+     *  Search and minimize representations of all the issues for the given fix version.
+     *  It creates jql string and search by {@code TaskServiceImpl#getTasksByJqlString}
+     *
+     *  @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
+     *  @return the list of issues with summary, status, description, fixVersions, comments
+     */
+    override fun getTasksByJiraRelease(jiraFixVersion: String): MutableList<Task> {
+        val taskList = getTasksByJqlString("project = $jiraProject AND fixVersion = $jiraFixVersion")
+        logger.info("getTasksByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
         return taskList
     }
 
@@ -120,10 +109,10 @@ class TaskServiceImpl(
      *  Limitations: All comments have to be checked by {@code String.startsWith}, now it is not always true
      *
      *  @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
-     *  @return the map of <issue key, comments> with test cases or instructions for deploy
+     *  @return the map of <issue key, comments> with test cases and instructions for deploy
      */
     override fun getTasksTestingAndDeployInfoByJiraRelease(jiraFixVersion: String): MutableMap<String, MutableList<String>> {
-        // Map to store special comments for test cases and deploy for each task
+        // Map to store special comments for test cases and deploy instructions for each task
         val comments: MutableMap<String, MutableList<String>> = hashMapOf()
         val taskList = getTasksByJiraRelease(jiraFixVersion)
 
@@ -137,6 +126,21 @@ class TaskServiceImpl(
             comments[task.key] = task.comments
         }
 
+        logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
         return comments.toSortedMap()
     }
+
+    private fun getRequestJsonForJqlQuery(jqlString: String) =
+        "{\n" +
+                "    \"jql\": \"$jqlString\",\n" +
+                "    \"startAt\": 0,\n" +
+                "    \"maxResults\": 15,\n" +
+                "    \"fields\": [\n" +
+                "        \"summary\",\n" +
+                "        \"status\",\n" +
+                "        \"description\",\n" +
+                "        \"fixVersions\",\n" +
+                "        \"comment\"\n" +
+                "    ]\n" +
+                "}"
 }

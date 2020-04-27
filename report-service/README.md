@@ -17,6 +17,13 @@ Type: `String`
 
 Url for Jira.
 
+##### jira.project
+
+*Required*\
+Type: `String`
+
+Default name of the project for Jira.
+
 ##### jira.auth.basic
 
 *Required*\
@@ -53,6 +60,12 @@ jira.comment.deploy.instruction.start=Инструкция по установк
 ## Usage
 
 There are examples of common requests in `jira-report-tools/src/test/kotlin/ru/morkovka/report/requestExample/service/`
+
+##### Get issues by jql search
+
+Type: `GET`\
+Url: `/task/byJql?jql={jql}`\
+Returns a list of representation of the issues for the given jql (Jira query language) search.
 
 ##### Get issue by issueIdOrKey
 
