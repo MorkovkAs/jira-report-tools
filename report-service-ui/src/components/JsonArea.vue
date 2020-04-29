@@ -14,7 +14,11 @@
             prettyJsonData: function () {
                 let json = this.jsonText;
                 // replacing escaped symbols from Jira error
-                if (json.errorText && json.errorText.message && typeof(json.errorText.message) !== 'object') {
+                if (json.errorText
+                    && json.errorText.status !== 500
+                    && json.errorText.message
+                    && typeof (json.errorText.message) !== 'object') {
+
                     let message = json.errorText.message;
                     json.errorText.message = JSON.parse(message.replace(/\\/g, ''));
                 }
@@ -22,20 +26,20 @@
                 json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 json = json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+]?\d+)?)/g,
                     function (match) {
-                    let cls = 'number';
-                    if (/^"/.test(match)) {
-                        if (/:$/.test(match)) {
-                            cls = 'key'
-                        } else {
-                            cls = 'string'
+                        let cls = 'number';
+                        if (/^"/.test(match)) {
+                            if (/:$/.test(match)) {
+                                cls = 'key'
+                            } else {
+                                cls = 'string'
+                            }
+                        } else if (/true|false/.test(match)) {
+                            cls = 'boolean'
+                        } else if (/null/.test(match)) {
+                            cls = 'null'
                         }
-                    } else if (/true|false/.test(match)) {
-                        cls = 'boolean'
-                    } else if (/null/.test(match)) {
-                        cls = 'null'
-                    }
-                    return '<span class="' + cls + '" >' + match + '</span>'
-                });
+                        return '<span class="' + cls + '" >' + match + '</span>'
+                    });
 
                 return json.replace(/(?:\\r\\n|\\r|\\n)/g, '575757\\\n').replace(/575757\\/g, '').replace(/\\"/g, '"');
             }

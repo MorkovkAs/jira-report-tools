@@ -4,8 +4,9 @@ It is a Vue.js client for getting Jira issues, getting reports on them, getting 
 
 ![](src/assets/Screenshot_1.jpg)
 
-## Project setup
+## Installation
 ```
+cd jira-report-tools/report-service-ui/
 npm install
 ```
 

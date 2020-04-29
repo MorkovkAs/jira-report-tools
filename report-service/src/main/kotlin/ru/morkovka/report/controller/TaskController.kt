@@ -17,27 +17,35 @@ class TaskController(
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @GetMapping("/byJql")
-    fun getTasksByJqlString(@RequestParam(value = "jql", defaultValue = "project = DM") jql: String): MutableList<Task> {
-        logger.info("Got request getTasksByJqlString [jql = $jql]")
-        return taskService.getTasksByJqlString(jql)
+    fun getTasksByJqlString(
+        @RequestParam(value = "jql", required = true) jql: String,
+        @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
+    ): MutableList<Task> {
+        logger.info("Got request getTasksByJqlString [jql = $jql; limit = $limit]")
+        return taskService.getTasksByJqlString(jql, limit)
     }
 
     @GetMapping("/byKey")
-    fun getTaskByKey(@RequestParam(value = "jiraKey", defaultValue = "DM-891") jiraKey: String): Task {
+    fun getTaskByKey(@RequestParam(value = "jiraKey", required = true) jiraKey: String): Task {
         logger.info("Got request getTaskByKey [jiraKey = $jiraKey]")
         return taskService.getTaskByJiraKey(jiraKey)
     }
 
     @GetMapping("/byRelease")
-    fun getTaskListByRelease(@RequestParam(value = "jiraRelease", defaultValue = "1.31.1") jiraRelease: String): MutableList<Task> {
-        logger.info("Got request getTaskListByRelease [jiraFixVersion = $jiraRelease]")
-        return taskService.getTasksByJiraRelease(jiraRelease)
+    fun getTaskListByRelease(
+        @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
+        @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
+    ): MutableList<Task> {
+        logger.info("Got request getTaskListByRelease [jiraFixVersion = $jiraRelease; limit = $limit]")
+        return taskService.getTasksByJiraRelease(jiraRelease, limit)
     }
 
-    @GetMapping("/testingInfoByRelease")
-    fun getTasksTestingInfoByRelease(@RequestParam(value = "jiraRelease", defaultValue = "1.37.0") jiraRelease: String):
-            MutableMap<String, MutableList<String>> {
-        logger.info("Got request getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraRelease]")
-        return taskService.getTasksTestingAndDeployInfoByJiraRelease(jiraRelease)
+    @GetMapping("/infoByRelease")
+    fun getTasksTestingAndDeployInfoByJiraRelease(
+        @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
+        @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
+    ): MutableMap<String, MutableList<String>> {
+        logger.info("Got request getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraRelease; limit = $limit]")
+        return taskService.getTasksTestingAndDeployInfoByJiraRelease(jiraRelease, limit)
     }
 }

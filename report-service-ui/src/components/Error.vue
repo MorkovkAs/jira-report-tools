@@ -23,7 +23,7 @@
         },
         props: {
             error: Object,
-            errorStatus: String
+            errorStatus: [String, Number]
         },
         data() {
             return {

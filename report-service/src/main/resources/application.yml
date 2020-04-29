@@ -3,13 +3,16 @@ server:
 
 jira:
   url: "https://jira.unidata-platform.com"
-  project: "DM"
   auth:
     basic: "Basic TW9ya292a0E6bXlTdXBlclBhc3M="
-  comment:
-    test:
-      case:
-        start: "Сценарий для тестирования на препроде"
-    deploy:
-      instruction:
-        start: "Инструкция по установке"
+  search:
+    default:
+      project: "DM"
+      limit: 15
+      comment:
+        test:
+          case:
+            start: "Сценарий для тестирования на препроде"
+        deploy:
+          instruction:
+            start: "Инструкция по установке"

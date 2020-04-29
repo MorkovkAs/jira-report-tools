@@ -8,18 +8,12 @@ Clone the source locally:
 ```
 $ git clone https://github.com/MorkovkAs/jira-report-tools/
 ```
-Fill the `jira.url` in `report-service/application.yml` file. See [details](report-service/README.md#jiraurl) in `report-service` module.
-  
-Fill the `jira.auth.basic` with your Jira auth data in `report-service/application.yml` file. See [details](report-service/README.md#jiraauthbasic) in `report-service` module.
 
-Check Gradle is installed and configured
+Check [Gradle](https://gradle.org/) and [Node.js with npm](https://nodejs.org/en/download/) are installed and configured
 
-Build and install with gradle
-```
-$ cd jira-report-tools/
-$ ./gradlew build
-$ ./gradlew bootRun
-```
+Build and install `report-service` module. See [instructions](report-service/README.md#installation)
+
+Build and install `report-service-ui` module. See [instructions](report-service-ui/README.md#installation)
 
 ## Modules
 1. `report-service` containing server side logic such as request processing, Jira integration, generating release notes. [Details](report-service/README.md)
@@ -29,7 +23,9 @@ $ ./gradlew bootRun
 * [x] commit `report-service` package with server side
 * [x] commit `report-service-ui` package with basic implementation of client side on Vue.js
 * [x] upgrade client side to support sending requests of all types
+* [ ] conversion of the release notes, in accordance with our project template
 * [ ] creating tasks with release info
+* [ ] adding UI form validation
 * [ ] some cool things:)
 
 ## Thanks!

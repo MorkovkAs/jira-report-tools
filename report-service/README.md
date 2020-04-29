@@ -2,9 +2,26 @@
 
 It is a REST service for getting Jira issues, generating reports on them, generating release notes.
 
+## Installation
+
+Fill the `jira.url` in `report-service/application.yml` file. See [details](#jiraurl) below
+
+Fill the `jira.auth.basic` with your Jira auth data in `report-service/application.yml` file. See [details](#jiraauthbasic) below
+
+Check Gradle is installed and configured
+
+Build and install with gradle
+```
+$ cd jira-report-tools/report-service/
+$ ./gradlew build
+$ ./gradlew bootRun
+```
+
 ## Usage preparation
 
-Fill your Jira auth data `jira.auth.basic` in `application.yml` file. See [details](#jiraauthbasic) below
+Fill the `jira.url` in `report-service/application.yml` file. See [details](#jiraurl) below
+
+Fill the `jira.auth.basic` with your Jira auth data in `report-service/application.yml` file. See [details](#jiraauthbasic) below
 
 ## Params
 
@@ -17,13 +34,6 @@ Type: `String`
 
 Url for Jira.
 
-##### jira.project
-
-*Required*\
-Type: `String`
-
-Default name of the project for Jira.
-
 ##### jira.auth.basic
 
 *Required*\
@@ -35,7 +45,21 @@ For example:
 jira.auth.basic=Basic TW9ya292a0E6bXlTdXBlclBhc3M=
 ```
 
-##### jira.comment.test.case.start
+##### jira.search.default.project
+
+*Required*\
+Type: `String`
+
+Default name of the project for Jira.
+
+##### jira.search.default.limit
+
+*Required*\
+Type: `Int`
+
+Default limit on the number of returned issues from Jira.
+
+##### jira.search.default.comment.test.case.start
 
 *Required*\
 Type: `String`
@@ -46,7 +70,7 @@ For example:
 jira.comment.test.case.start=Сценарий для тестирования на препроде
 ```
 
-##### jira.comment.deploy.instruction.start
+##### jira.search.default.comment.deploy.instruction.start
 
 *Required*\
 Type: `String`
@@ -64,7 +88,7 @@ There are examples of common requests in `jira-report-tools/src/test/kotlin/ru/m
 ##### Get issues by jql search
 
 Type: `GET`\
-Url: `/task/byJql?jql={jql}`\
+Url: `/task/byJql?jql={jql}&limit={limit}`\
 Returns a list of representation of the issues for the given jql (Jira query language) search.
 
 ##### Get issue by issueIdOrKey
@@ -76,13 +100,13 @@ Returns a representation of the issue for the given issue key.
 ##### Get issues by fixVersion
 
 Type: `GET`\
-Url: `/task/byRelease?jiraRelease={fixVersion}`\
+Url: `/task/byRelease?jiraRelease={fixVersion}&limit={limit}`\
 Returns a list of representation of the issues for the given fixVersion.
 
 ##### Get simple instructions for issues by fixVersion
 
 Type: `GET`\
-Url: `/task/testingInfoByRelease?jiraRelease={fixVersion}`\
+Url: `/task/testingInfoByRelease?jiraRelease={fixVersion}&limit={limit}`\
 Returns test cases and deploy instructions of the issues for the given fixVersion.
 
 ## Thanks!

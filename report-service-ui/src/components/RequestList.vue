@@ -14,7 +14,10 @@
                         </select>
                         <input v-model="requestKey" v-bind:disabled=!requestTypeSelected :placeholder="[[ searchParamType ]]">
                     </p>
-                    <button v-on:click="sendRequest" v-bind:disabled=!requestKey>Send</button>
+                    <label> Limit by:
+                        <input v-model="requestLimit" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
+                    </label>
+                    <p><button v-on:click="sendRequest" v-bind:disabled=!requestKey>Send</button></p>
                 </td>
                 <td style="width: 60%">
                     <h3 v-if="firstRequestSend">Result</h3>
@@ -48,6 +51,7 @@
             return {
                 requestTypeSelected: '',
                 requestKey: '',
+                requestLimit: 15,
                 requestOptions: [
                     {
                         text: 'Get issue',
@@ -71,7 +75,7 @@
                         text: 'Get release notes',
                         key: 'getReleaseNotes',
                         searchParam: 'Enter release',
-                        url: '/task/testingInfoByRelease?jiraRelease='
+                        url: '/task/infoByRelease?jiraRelease='
                     }
                 ],
                 response: null,
@@ -97,13 +101,17 @@
         methods: {
             sendRequest: function () {
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);
-                let requestUrl = item.url;
+                let resultUrl = 'http://localhost:8181' + item.url + this.requestKey;
+                if (item.key !== 'getIssue') {
+                    resultUrl += '&limit=' + this.requestLimit
+                }
+
                 this.firstRequestSend = true;
                 this.loading = true;
                 this.response = null;
 
                 axios
-                    .get('http://localhost:8181' + requestUrl + this.requestKey)
+                    .get(resultUrl)
                     .then(response => {
                         this.response = response.data;
                         this.errored = false;
@@ -120,7 +128,7 @@
                         } else {
                             this.error.errorCode = 523;
                             this.error.errorText = error.message + ': Origin Is Unreachable';
-                            this.errorStatus = 'ORIGIN IS UNREACHABLE';
+                            this.errorStatus = 'ORIGIN_IS_UNREACHABLE';
                         }
                         console.log(error);
                         this.errored = true;

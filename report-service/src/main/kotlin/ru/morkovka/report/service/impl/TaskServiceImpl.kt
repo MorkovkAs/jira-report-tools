@@ -22,16 +22,16 @@ class TaskServiceImpl(
     @Value("\${jira.url}")
     private val jiraUrl: String,
 
-    @Value("\${jira.project}")
+    @Value("\${jira.search.default.project}")
     private val jiraProject: String,
 
     @Value("\${jira.auth.basic}")
     private val jiraAuthBasic: String,
 
-    @Value("\${jira.comment.test.case.start}")
+    @Value("\${jira.search.default.comment.test.case.start}")
     private var taskCommentTestCaseStart: String,
 
-    @Value("\${jira.comment.deploy.instruction.start}")
+    @Value("\${jira.search.default.comment.deploy.instruction.start}")
     private var taskCommentDeployInstructionsStart: String
 ) : TaskService {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -49,11 +49,12 @@ class TaskServiceImpl(
      *  Search issues by the given jql (Jira query language) search
      *
      *  @param jqlString the string in jql (Jira query language) to search by. For example "project = DM AND fixVersion = 1.31.1"
+     *  @param limit on the number of returned issues from Jira
      *  @return the list of issues with summary, status, description, fixVersions, comments
      */
-    override fun getTasksByJqlString(jqlString: String): MutableList<Task> {
+    override fun getTasksByJqlString(jqlString: String, limit: Int): MutableList<Task> {
         val builder = UriComponentsBuilder.fromHttpUrl("$jiraUrlRest/search")
-        val requestJson = getRequestJsonForJqlQuery(jqlString)
+        val requestJson = getRequestJsonForJqlQuery(jqlString, limit)
         val entity = HttpEntity<Any>(requestJson, headers)
 
         val response: ResponseEntity<String> = restTemplate.exchange(
@@ -79,7 +80,7 @@ class TaskServiceImpl(
      *  @return the issue with summary, status, description, fixVersions, comments
      */
     override fun getTaskByJiraKey(jiraKey: String): Task {
-        val taskList = getTasksByJqlString("issueKey = $jiraKey")
+        val taskList = getTasksByJqlString("issueKey = $jiraKey", 1)
 
         // We do know that there is only 1 element in taskList.
         // If not, a HttpClientErrorException has occurred because of 404 error from Jira rest
@@ -94,11 +95,13 @@ class TaskServiceImpl(
      *  It creates jql string and search by {@code TaskServiceImpl#getTasksByJqlString}
      *
      *  @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
+     *  @param limit on the number of returned issues from Jira
      *  @return the list of issues with summary, status, description, fixVersions, comments
      */
-    override fun getTasksByJiraRelease(jiraFixVersion: String): MutableList<Task> {
-        val taskList = getTasksByJqlString("project = $jiraProject AND fixVersion = $jiraFixVersion")
+    override fun getTasksByJiraRelease(jiraFixVersion: String, limit: Int): MutableList<Task> {
+        val taskList = getTasksByJqlString("project = $jiraProject AND fixVersion = $jiraFixVersion", limit)
         logger.info("getTasksByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
+
         return taskList
     }
 
@@ -109,14 +112,16 @@ class TaskServiceImpl(
      *  Limitations: All comments have to be checked by {@code String.startsWith}, now it is not always true
      *
      *  @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
+     *  @param limit on the number of returned issues from Jira
      *  @return the map of <issue key, comments> with test cases and instructions for deploy
      */
-    override fun getTasksTestingAndDeployInfoByJiraRelease(jiraFixVersion: String): MutableMap<String, MutableList<String>> {
+    override fun getTasksTestingAndDeployInfoByJiraRelease(jiraFixVersion: String, limit: Int): MutableMap<String,
+            MutableList<String>> {
         // Map to store special comments for test cases and deploy instructions for each task
         val comments: MutableMap<String, MutableList<String>> = hashMapOf()
-        val taskList = getTasksByJiraRelease(jiraFixVersion)
+        val taskList = getTasksByJiraRelease(jiraFixVersion, limit)
 
-        //TODO change here to String.startsWith
+        //TODO change here to String.startsWith when the team starts using Jira comments correctly to populate such the data
         taskList.stream().forEach { task ->
             task.comments = task.comments.stream()
                 .filter { comment ->
@@ -127,14 +132,16 @@ class TaskServiceImpl(
         }
 
         logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
+
+        // TODO change default comparator to custom one. "DM-1" < "DM-2" < ... < "DM-10" < "DM-11" < ...
         return comments.toSortedMap()
     }
 
-    private fun getRequestJsonForJqlQuery(jqlString: String) =
+    private fun getRequestJsonForJqlQuery(jqlString: String, maxResults: Int) =
         "{\n" +
-                "    \"jql\": \"$jqlString\",\n" +
+                "    \"jql\": \"$jqlString ORDER BY key ASC\",\n" +
                 "    \"startAt\": 0,\n" +
-                "    \"maxResults\": 15,\n" +
+                "    \"maxResults\": $maxResults,\n" +
                 "    \"fields\": [\n" +
                 "        \"summary\",\n" +
                 "        \"status\",\n" +
