@@ -3,11 +3,12 @@ package ru.morkovka.report.service.impl
 import com.google.gson.Gson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.web.client.RestTemplateBuilder
-import org.springframework.http.*
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.client.DefaultResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import ru.morkovka.report.entity.Task
@@ -25,25 +26,18 @@ class TaskServiceImpl(
     @Value("\${jira.search.default.project}")
     private val jiraProject: String,
 
-    @Value("\${jira.auth.basic}")
-    private val jiraAuthBasic: String,
-
     @Value("\${jira.search.default.comment.test.case.start}")
     private var taskCommentTestCaseStart: String,
 
     @Value("\${jira.search.default.comment.deploy.instruction.start}")
     private var taskCommentDeployInstructionsStart: String
 ) : TaskService {
+
+    @Autowired
+    private lateinit var restTemplate: RestTemplate
+
     val logger: Logger = LoggerFactory.getLogger(javaClass)
     val jiraUrlRest: String = "$jiraUrl/rest/api/latest"
-    val restTemplate: RestTemplate = RestTemplateBuilder().errorHandler(DefaultResponseErrorHandler()).build()
-    private val headers = HttpHeaders()
-
-    init {
-        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-        //TODO check your auth data in application.yml file. It should be the result of ("Basic " + base64(login + ":" + password))
-        headers.set("Authorization", jiraAuthBasic)
-    }
 
     /**
      *  Search issues by the given jql (Jira query language) search
@@ -55,7 +49,7 @@ class TaskServiceImpl(
     override fun getTasksByJqlString(jqlString: String, limit: Int): MutableList<Task> {
         val builder = UriComponentsBuilder.fromHttpUrl("$jiraUrlRest/search")
         val requestJson = getRequestJsonForJqlQuery(jqlString, limit)
-        val entity = HttpEntity<Any>(requestJson, headers)
+        val entity = HttpEntity<Any>(requestJson)
 
         val response: ResponseEntity<String> = restTemplate.exchange(
             builder.toUriString(),
