@@ -19,4 +19,6 @@ jobs:
     - name: Change wrapper permissions
       run: chmod +x ./gradlew
     - name: Build with Gradle
+      env: # Get variable from GitHub secrets
+        jiraAuthBasic: ${{ secrets.jiraAuthBasic }}
       run: ./gradlew build
