@@ -9,6 +9,4 @@ interface TaskService {
     fun getTaskByJiraKey(jiraKey: String): Task
 
     fun getTasksByJiraRelease(jiraFixVersion: String, limit: Int): MutableList<Task>
-
-    fun getTasksTestingAndDeployInfoByJiraRelease(jiraFixVersion: String, limit: Int): MutableMap<String, MutableList<String>>
 }

@@ -24,13 +24,7 @@ class TaskServiceImpl(
     private val jiraUrl: String,
 
     @Value("\${jira.search.default.project}")
-    private val jiraProject: String,
-
-    @Value("\${jira.search.default.comment.test.case.start}")
-    private var taskCommentTestCaseStart: String,
-
-    @Value("\${jira.search.default.comment.deploy.instruction.start}")
-    private var taskCommentDeployInstructionsStart: String
+    private val jiraProject: String
 ) : TaskService {
 
     @Autowired
@@ -99,38 +93,6 @@ class TaskServiceImpl(
         return taskList
     }
 
-    /**
-     *  Search of all the issues for the given fix version by {@code TaskServiceImpl#getTasksByJiraRelease}.
-     *  Than filter comments in issues by special strings so all issues contain comments only of
-     *  test cases or deploy instructions.
-     *  Limitations: All comments have to be checked by {@code String.startsWith}, now it is not always true
-     *
-     *  @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
-     *  @param limit on the number of returned issues from Jira
-     *  @return the map of <issue key, comments> with test cases and instructions for deploy
-     */
-    override fun getTasksTestingAndDeployInfoByJiraRelease(jiraFixVersion: String, limit: Int): MutableMap<String,
-            MutableList<String>> {
-        // Map to store special comments for test cases and deploy instructions for each task
-        val comments: MutableMap<String, MutableList<String>> = hashMapOf()
-        val taskList = getTasksByJiraRelease(jiraFixVersion, limit)
-
-        //TODO change here to String.startsWith when the team starts using Jira comments correctly to populate such the data
-        taskList.stream().forEach { task ->
-            task.comments = task.comments.stream()
-                .filter { comment ->
-                    comment.contains(taskCommentTestCaseStart)
-                            || comment.startsWith(taskCommentDeployInstructionsStart)
-                }.collect(Collectors.toList())
-            comments[task.key] = task.comments
-        }
-
-        logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
-
-        // TODO change default comparator to custom one. "DM-1" < "DM-2" < ... < "DM-10" < "DM-11" < ...
-        return comments.toSortedMap()
-    }
-
     private fun getRequestJsonForJqlQuery(jqlString: String, maxResults: Int) =
         "{\n" +
                 "    \"jql\": \"$jqlString ORDER BY key ASC\",\n" +
@@ -144,4 +106,5 @@ class TaskServiceImpl(
                 "        \"comment\"\n" +
                 "    ]\n" +
                 "}"
+
 }
