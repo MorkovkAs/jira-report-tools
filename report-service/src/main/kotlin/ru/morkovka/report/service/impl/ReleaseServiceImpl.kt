@@ -2,11 +2,13 @@ package ru.morkovka.report.service.impl
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ru.morkovka.report.service.ReleaseService
 import java.util.*
 import java.util.ArrayList
+import java.util.regex.Matcher
 import java.util.regex.Pattern
 import java.util.stream.Collectors
 
@@ -18,11 +20,11 @@ class ReleaseServiceImpl(
     @Value("\${jira.search.default.comment.deploy.instruction.start}")
     private var taskCommentDeployInstructionsStart: String
 ) : ReleaseService {
+
+    @Autowired
+    private lateinit var taskServiceImpl: TaskServiceImpl
+
     val logger: Logger = LoggerFactory.getLogger(javaClass)
-    val taskServiceImpl: TaskServiceImpl
-        get() {
-            TODO()
-        }
 
     /**
      *  Search of all the issues for the given fix version by {@code TaskServiceImpl#getTasksByJiraRelease}.
@@ -48,36 +50,46 @@ class ReleaseServiceImpl(
                             || comment.startsWith(taskCommentDeployInstructionsStart)
                 }.collect(Collectors.toList())
             comments[task.key] = task.comments
-        }
+        } 
 
         logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
 
-        // TODO change default comparator to custom one. "DM-1" < "DM-2" < ... < "DM-10" < "DM-11" < ...
-        customSort(comments) //Custom comparator added
-        return comments
+        return customSort(comments) //Custom comparator added
     }
 
-    private fun customSort(map: MutableMap<String, MutableList<String>>) {
-        val comparator =
-            Comparator { o1: Map.Entry<String, List<String>>, o2: Map.Entry<String, List<String>> ->
-                val one = getNumber(o1.key)
-                val two = getNumber(o2.key)
-                one.compareTo(two)
-            }
-        val entries: List<Map.Entry<String, MutableList<String>>> =
-            ArrayList<Map.Entry<String, MutableList<String>>>(map.entries)
-        entries.sortedWith(comparator)
-        map.clear()
-        for ((key, value) in entries) {
-            map[key] = value
-        }
+    fun customSort(map: MutableMap<String, MutableList<String>>):
+            MutableMap<String, MutableList<String>> {
+//        val comparator =
+//            Comparator { o1: Map.Entry<String, List<String>>, o2: Map.Entry<String, List<String>> ->
+//                val one = getNumber(o1.key)
+//                val two = getNumber(o2.key)
+//                one.compareTo(two)
+//            }
+//        val entries: List<Map.Entry<String, MutableList<String>>> =
+//            ArrayList<Map.Entry<String, MutableList<String>>>(map.entries)
+//        entries.sortedWith(comparator)
+//        map.clear()
+//        for ((key, value) in entries) {
+//            map[key] = value
+//        }
+        return map.toSortedMap(compareBy<String> { getProjectName(it) }.thenBy { getNumber(it) })
     }
 
-    private fun getNumber(str: String): Int {
+    fun getMatcher(str: String): Matcher {
         val pattern =
             Pattern.compile("(.*)-(\\d+)", Pattern.CASE_INSENSITIVE)
-        val matcher = pattern.matcher(str)
+        return pattern.matcher(str)
+    }
+
+    fun getNumber(str: String): Int {
+        val matcher = getMatcher(str)
         matcher.find()
         return matcher.group(2).toInt()
+    }
+
+    fun getProjectName(str: String): String {
+        val matcher = getMatcher(str)
+        matcher.find()
+        return matcher.group(1).toString()
     }
 }

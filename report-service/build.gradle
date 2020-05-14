@@ -27,6 +27,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     compile "org.springframework.boot:spring-boot-starter-web"
     testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile 'org.mockito:mockito-core:3.3.3'
 
     implementation 'com.google.code.gson:gson:2.8.5'
 }
