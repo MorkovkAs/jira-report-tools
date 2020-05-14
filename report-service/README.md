@@ -1,3 +1,9 @@
+<p align="center">
+    <img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/workflow/status/MorkovkAs/jira-report-tools/reportServiceCI/master">
+    <a href="https://github.com/MorkovkAs/jira-report-tools/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/MorkovkAs/jira-report-tools"></a>
+    <a href="https://github.com/MorkovkAs/jira-report-tools/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/MorkovkAs/jira-report-tools"></a>
+</p>
+
 # Jira report tool service
 
 It is a REST service for getting Jira issues, generating reports on them, generating release notes.
