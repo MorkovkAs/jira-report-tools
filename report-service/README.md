@@ -106,7 +106,7 @@ Returns a list of representation of the issues for the given fixVersion.
 ##### Get simple instructions for issues by fixVersion
 
 Type: `GET`\
-Url: `/task/testingInfoByRelease?jiraRelease={fixVersion}&limit={limit}`\
+Url: `/release/infoByRelease?jiraRelease={fixVersion}&limit={limit}`\
 Returns test cases and deploy instructions of the issues for the given fixVersion.
 
 ## Thanks!
