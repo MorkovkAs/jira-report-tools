@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ru.morkovka.report.service.ReleaseService
+import ru.morkovka.report.utils.TaskUtils.Companion.sortByJiraKey
 import java.util.*
-import java.util.ArrayList
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import java.util.stream.Collectors
 
 @Service
@@ -50,46 +48,10 @@ class ReleaseServiceImpl(
                             || comment.startsWith(taskCommentDeployInstructionsStart)
                 }.collect(Collectors.toList())
             comments[task.key] = task.comments
-        } 
+        }
 
         logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
 
-        return customSort(comments) //Custom comparator added
-    }
-
-    fun customSort(map: MutableMap<String, MutableList<String>>):
-            MutableMap<String, MutableList<String>> {
-//        val comparator =
-//            Comparator { o1: Map.Entry<String, List<String>>, o2: Map.Entry<String, List<String>> ->
-//                val one = getNumber(o1.key)
-//                val two = getNumber(o2.key)
-//                one.compareTo(two)
-//            }
-//        val entries: List<Map.Entry<String, MutableList<String>>> =
-//            ArrayList<Map.Entry<String, MutableList<String>>>(map.entries)
-//        entries.sortedWith(comparator)
-//        map.clear()
-//        for ((key, value) in entries) {
-//            map[key] = value
-//        }
-        return map.toSortedMap(compareBy<String> { getProjectName(it) }.thenBy { getNumber(it) })
-    }
-
-    fun getMatcher(str: String): Matcher {
-        val pattern =
-            Pattern.compile("(.*)-(\\d+)", Pattern.CASE_INSENSITIVE)
-        return pattern.matcher(str)
-    }
-
-    fun getNumber(str: String): Int {
-        val matcher = getMatcher(str)
-        matcher.find()
-        return matcher.group(2).toInt()
-    }
-
-    fun getProjectName(str: String): String {
-        val matcher = getMatcher(str)
-        matcher.find()
-        return matcher.group(1).toString()
+        return sortByJiraKey(comments)
     }
 }
