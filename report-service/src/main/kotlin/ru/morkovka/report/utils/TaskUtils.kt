@@ -10,7 +10,7 @@ class TaskUtils {
          * Sorts all items in map by project name then by task number:
          * "DM-1" < "DM-2" < "DM-3" < "NEW-1" < "NEW-2"
          *
-         * @param map to sort. Key in map is jiraKey of a task.
+         * @param map to sort. A key in map is a task jiraKey.
          * @return sorted map
          */
         fun sortByJiraKey(map: MutableMap<String, MutableList<String>>) =

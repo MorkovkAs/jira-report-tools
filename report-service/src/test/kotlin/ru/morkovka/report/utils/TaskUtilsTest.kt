@@ -1,7 +1,9 @@
 package ru.morkovka.report.utils
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Test
+import ru.morkovka.report.utils.TaskUtils.Companion.getNumberFromJiraKey
 import ru.morkovka.report.utils.TaskUtils.Companion.getProjectNameFromJiraKey
 
 class TaskUtilsTest {
@@ -30,16 +32,34 @@ class TaskUtilsTest {
     @Test
     fun getProjectNameFromJiraKeyTestCorrectNameWithNumbers() {
         val jiraKey = "D12M-123"
+        val jiraKey2 = "D1M2-123"
+        val jiraKey3 = "1D2M3-123"
 
         assertEquals("D12M", getProjectNameFromJiraKey(jiraKey))
+        assertEquals("D1M2", getProjectNameFromJiraKey(jiraKey2))
+        assertEquals("1D2M3", getProjectNameFromJiraKey(jiraKey3))
     }
 
     @Test
-    fun getProjectNameFromJiraKeyTestCorrectNameWithNumbers2() {
-        val jiraKey = "D1M2-123"
+    fun getNumberFromJiraKeyTest() {
+        val jiraKey = "DM-123"
 
-        assertEquals("D1M2", getProjectNameFromJiraKey(jiraKey))
+        assertEquals(123, getNumberFromJiraKey(jiraKey))
     }
 
-    // TODO tests for else functions of TaskUtils class
+    @Test
+    fun getNumberFromJiraKeyTestMultipleHyphens() {
+        val jiraKey = "DM-NEW-123"
+
+        assertEquals(123, getNumberFromJiraKey(jiraKey))
+    }
+
+    @Test
+    fun getNumberFromJiraKeyWithLetters() {
+        val jiraKey = "D12M-1B23"
+
+        assertNotEquals(123, getProjectNameFromJiraKey(jiraKey))
+    }
+
+    // TODO tests for sort function of TaskUtils class
 }
