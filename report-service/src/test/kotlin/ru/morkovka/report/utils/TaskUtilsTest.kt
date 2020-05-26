@@ -1,12 +1,28 @@
 package ru.morkovka.report.utils
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
+import org.junit.Assert.*
 import org.junit.Test
 import ru.morkovka.report.utils.TaskUtils.Companion.getNumberFromJiraKey
 import ru.morkovka.report.utils.TaskUtils.Companion.getProjectNameFromJiraKey
+import ru.morkovka.report.utils.TaskUtils.Companion.sortByJiraKey
+import java.util.*
 
 class TaskUtilsTest {
+
+    @Test
+    fun sortByJiraKeyTest() {
+        val taskMap: MutableMap<String, MutableList<String>> = LinkedHashMap()
+        val taskSortedKeys = mutableListOf("DM-1", "DM-2", "DM-11", "DM-NEW-2", "DM-NEW-5")
+
+        taskSortedKeys.shuffled().forEach { taskMap[it] = mutableListOf() }
+        assertNotEquals(taskSortedKeys, taskMap.keys.toList())
+
+        val taskSortedMap = sortByJiraKey(taskMap)
+
+        assertEquals(taskMap.size, taskSortedMap.size)
+        assertEquals(taskSortedKeys.size, taskSortedMap.size)
+        assertEquals(taskSortedKeys, taskSortedMap.keys.toList())
+    }
 
     @Test
     fun getProjectNameFromJiraKeyTest() {
@@ -60,6 +76,4 @@ class TaskUtilsTest {
 
         assertNotEquals(123, getProjectNameFromJiraKey(jiraKey))
     }
-
-    // TODO tests for sort function of TaskUtils class
 }
