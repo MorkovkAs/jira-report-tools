@@ -39,13 +39,4 @@ class TaskController(
         logger.info("Got request getTaskListByRelease [jiraFixVersion = $jiraRelease; limit = $limit]")
         return taskService.getTasksByJiraRelease(jiraRelease, limit)
     }
-
-    @GetMapping("/infoByRelease")
-    fun getTasksTestingAndDeployInfoByJiraRelease(
-        @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
-        @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
-    ): MutableMap<String, MutableList<String>> {
-        logger.info("Got request getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraRelease; limit = $limit]")
-        return taskService.getTasksTestingAndDeployInfoByJiraRelease(jiraRelease, limit)
-    }
 }

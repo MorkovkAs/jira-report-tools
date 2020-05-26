@@ -75,7 +75,7 @@
                         text: 'Get release notes',
                         key: 'getReleaseNotes',
                         searchParam: 'Enter release',
-                        url: '/task/infoByRelease?jiraRelease='
+                        url: '/release/infoByRelease?jiraRelease='
                     }
                 ],
                 response: null,
