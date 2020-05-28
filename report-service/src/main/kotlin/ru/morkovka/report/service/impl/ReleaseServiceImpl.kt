@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import ru.morkovka.report.entity.Task
 import ru.morkovka.report.service.ReleaseService
+import ru.morkovka.report.utils.ReleaseUtils
 import ru.morkovka.report.utils.TaskUtils.Companion.sortByJiraKey
 import java.util.*
 import java.util.stream.Collectors
@@ -22,6 +24,9 @@ class ReleaseServiceImpl(
     @Autowired
     private lateinit var taskServiceImpl: TaskServiceImpl
 
+    @Autowired
+    private lateinit var releaseUtils: ReleaseUtils
+
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     /**
@@ -37,10 +42,21 @@ class ReleaseServiceImpl(
     override fun getTasksTestingAndDeployInfoByJiraRelease(jiraFixVersion: String, limit: Int): MutableMap<String,
             MutableList<String>> {
         // Map to store special comments for test cases and deploy instructions for each task
-        val comments: MutableMap<String, MutableList<String>> = LinkedHashMap()
+        var comments: MutableMap<String, MutableList<String>> = LinkedHashMap()
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
 
         //TODO change here to String.startsWith when the team starts using Jira comments correctly to populate such the data
+        comments = getCommentsFromTasksByKey(taskList)
+
+        logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
+
+        return sortByJiraKey(comments)
+    }
+
+    private fun getCommentsFromTasksByKey(
+        taskList: MutableList<Task>
+    ): MutableMap<String, MutableList<String>> {
+        val comments: MutableMap<String, MutableList<String>> = LinkedHashMap()
         taskList.stream().forEach { task ->
             task.comments = task.comments.stream()
                 .filter { comment ->
@@ -49,9 +65,6 @@ class ReleaseServiceImpl(
                 }.collect(Collectors.toList())
             comments[task.key] = task.comments
         }
-
-        logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
-
-        return sortByJiraKey(comments)
+        return comments
     }
 }
