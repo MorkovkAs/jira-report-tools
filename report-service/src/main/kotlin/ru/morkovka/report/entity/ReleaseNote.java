@@ -5,12 +5,15 @@ import java.util.ArrayList;
 public class ReleaseNote {
     private String distributions;
     private ArrayList<String> changes;
-    private String dbChanges;
-    private String configs;
-    private String installation;
-    private String testing;
-    private String rollback;
+    private ArrayList<String> dbChanges;
+    private ArrayList<String> configs;
+    private ArrayList<String> installation;
+    private ArrayList<String> testing;
+    private ArrayList<String> rollback;
 
+    /**
+     * Дистрибутивы
+     * **/
     public String getDistributions() {
         return distributions;
     }
@@ -19,6 +22,9 @@ public class ReleaseNote {
         this.distributions = distributions;
     }
 
+    /**
+     * Новые функции и исправления
+     * **/
     public ArrayList<String> getChanges() {
         return changes;
     }
@@ -27,43 +33,58 @@ public class ReleaseNote {
         this.changes = changes;
     }
 
-    public String getDbChanges() {
+    /**
+     * Настройки и изменения в структуре БД
+     * **/
+    public ArrayList<String> getDbChanges() {
         return dbChanges;
     }
 
-    public void setDbChanges(String dbChanges) {
+    public void setDbChanges(ArrayList<String> dbChanges) {
         this.dbChanges = dbChanges;
     }
 
-    public String getConfigs() {
+    /**
+     * Конфигурация
+     * **/
+    public ArrayList<String> getConfigs() {
         return configs;
     }
 
-    public void setConfigs(String configs) {
+    public void setConfigs(ArrayList<String> configs) {
         this.configs = configs;
     }
 
-    public String getInstallation() {
+    /**
+     * Порядок установки и изменения настроек
+     * **/
+    public ArrayList<String> getInstallation() {
         return installation;
     }
 
-    public void setInstallation(String installation) {
+    public void setInstallation(ArrayList<String> installation) {
         this.installation = installation;
     }
 
-    public String getTesting() {
+    /**
+     * План тестирования
+     * **/
+    public ArrayList<String> getTesting() {
         return testing;
     }
 
-    public void setTesting(String testing) {
+    public void setTesting(ArrayList<String> testing) {
         this.testing = testing;
     }
 
-    public String getRollback() {
+    /**
+     * План отката
+     * **/
+    public ArrayList<String> getRollback() {
         return rollback;
     }
 
-    public void setRollback(String rollback) {
+    public void setRollback(ArrayList<String> rollback) {
         this.rollback = rollback;
     }
 }
