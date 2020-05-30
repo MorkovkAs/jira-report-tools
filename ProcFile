@@ -1,1 +1,0 @@
-web: cd report-service-ui && npm run build
