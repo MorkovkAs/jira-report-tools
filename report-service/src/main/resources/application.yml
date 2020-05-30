@@ -1,5 +1,4 @@
-server:
-  port: 8181
+server.port: ${PORT:8181}
 
 jira:
   url: "https://jira.unidata-platform.com"
