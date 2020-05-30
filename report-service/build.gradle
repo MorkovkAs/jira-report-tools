@@ -16,7 +16,7 @@ apply plugin: "kotlin-spring" // https://kotlinlang.org/docs/reference/compiler-
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-group = "com.morkovka.jira-report-tools"
+group = "ru.morkovka.jira-report-tools"
 version '0.0.1'
 
 repositories {
