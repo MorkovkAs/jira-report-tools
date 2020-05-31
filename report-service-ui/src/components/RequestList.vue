@@ -49,6 +49,7 @@
 
         data() {
             return {
+                port: process.env.PORT || "8080",
                 requestTypeSelected: '',
                 requestKey: '',
                 requestLimit: 15,
@@ -101,7 +102,8 @@
         methods: {
             sendRequest: function () {
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);
-                let resultUrl = 'http://localhost:8181' + item.url + this.requestKey;
+                let resultUrl = 'http://localhost:' + this.port + item.url + this.requestKey;
+                console.log(resultUrl)
                 if (item.key !== 'getIssue') {
                     resultUrl += '&limit=' + this.requestLimit
                 }

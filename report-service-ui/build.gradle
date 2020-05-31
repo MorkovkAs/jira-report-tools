@@ -23,13 +23,9 @@ frontend {
     nodeVersion.set("10.16.0")
     cleanScript.set("run clean")
     installScript.set("install")
-    assembleScript.set("run build") //build
+    assembleScript.set("run build")
 }
 
-/*
-tasks.named("jar", Jar::class) {
-    dependsOn("assembleFrontend")
+jar.into("static") {
     from("$buildDir/dist")
-    into("static")
-}
-*/
+}.dependsOn("assembleFrontend")
