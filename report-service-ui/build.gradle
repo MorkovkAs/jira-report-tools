@@ -26,6 +26,8 @@ frontend {
     assembleScript.set("run build")
 }
 
-jar.into("static") {
+task copyJsFilesToService(type: Copy) {
+    dependsOn("assembleFrontend")
     from("$buildDir/dist")
-}.dependsOn("assembleFrontend")
+    into("$rootDir/report-service/build/resources/main/static")
+}
