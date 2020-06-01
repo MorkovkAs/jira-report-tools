@@ -24,8 +24,16 @@
                             <input v-model="token" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
                         </label>
                     </p>
+                    <Recaptcha
+                            :sitekey=recaptchaKey
+                            :loadRecaptchaScript="true"
+                            ref="recaptcha"
+                            @verify="onVerify"
+                            @expired="onExpired"
+                            align="center"/>
+                    <!--<button v-on:click="resetRecaptcha"> Reset ReCAPTCHA</button>-->
                     <p>
-                        <button v-on:click="sendRequest" v-bind:disabled=!requestKey>Send</button>
+                        <button v-on:click="sendRequest" v-bind:disabled=!isOkToSend>Send</button>
                     </p>
                 </td>
                 <td style="width: 60%">
@@ -47,17 +55,20 @@
 <script>
     import Issue from './Issue.vue'
     import Error from './Error.vue'
-    import axios from "axios";
+    import Recaptcha from 'vue-recaptcha';
+    import axios from "axios"
 
     export default {
         name: "JiraRequests",
         components: {
             Issue,
-            Error
+            Error,
+            Recaptcha
         },
 
         data() {
             return {
+                recaptchaKey: '6LfuA_8UAAAAAIaccql90DkNTuR9BL6W6bsyKDtO',
                 requestTypeSelected: '',
                 requestKey: '',
                 requestLimit: 15,
@@ -96,10 +107,14 @@
                 errorStatus: null,
                 loading: false,
                 errored: false,
-                firstRequestSend: false
+                firstRequestSend: false,
+                verified: false
             }
         },
         computed: {
+            isOkToSend() {
+                return this.verified && this.requestKey && this.token;
+            },
             searchParamType: function () {
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);
                 if (item) {
@@ -109,6 +124,17 @@
             }
         },
         methods: {
+            onVerify: function () {
+                this.verified = true
+            },
+            onExpired: function () {
+                this.verified = false
+            },
+            resetRecaptcha() {
+                this.verified = false
+                this.$refs.recaptcha.reset()
+            },
+
             sendRequest: function () {
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);
                 let resultUrl = item.url + this.requestKey;
