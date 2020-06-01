@@ -2,7 +2,7 @@ name: buildAndDeployMaster
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, ci ]
 
 jobs:
   build:
