@@ -16,10 +16,10 @@ jobs:
         java-version: 1.8
     - name: Change wrapper permissions
       run: chmod +x ./gradlew
-    - name: Build with Gradle
-      env: # Get variable from GitHub secrets
-        jiraAuthBasic: ${{ secrets.jiraAuthBasic }}
-      run: ./gradlew stage
+    #- name: Build with Gradle
+    #  env: # Get variable from GitHub secrets
+    #    jiraAuthBasic: ${{ secrets.jiraAuthBasic }}
+    #  run: ./gradlew build
     - name: Login to Heroku Container registry
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
