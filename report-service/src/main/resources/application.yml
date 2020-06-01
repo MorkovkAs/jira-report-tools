@@ -1,6 +1,3 @@
-server:
-  port: 8181
-
 jira:
   url: "https://jira.unidata-platform.com"
   auth:

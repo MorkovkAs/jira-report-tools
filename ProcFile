@@ -1,1 +1,0 @@
-web: java -Dserver.port=$PORT -jar build/libs/jira-report-tools-0.0.1.jar

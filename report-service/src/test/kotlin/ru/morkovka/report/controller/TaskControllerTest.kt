@@ -1,6 +1,7 @@
 package ru.morkovka.report.controller
 
 import org.junit.Assert.*
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,16 +13,19 @@ import org.springframework.web.client.RestTemplate
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@Ignore
 class TaskControllerTest {
 
     @Autowired
     private lateinit var restTemplate: RestTemplate
 
+    val port: String = System.getenv("PORT") ?: "8080"
+
     @Test
     fun getTasksByJqlStringTest() {
         val jiraKey = "DM-555"
         val jql = "project = DM AND issueKey = $jiraKey"
-        val result = restTemplate.getForEntity("http://localhost:8181/task/byJql?jql={jql}", String::class.java, jql)
+        val result = restTemplate.getForEntity("http://localhost:$port/task/byJql?jql={jql}", String::class.java, jql)
 
         assertNotNull(result)
         assertEquals(HttpStatus.OK, result.statusCode)
@@ -32,7 +36,7 @@ class TaskControllerTest {
     @Test
     fun getTaskByKeyTest() {
         val jiraKey = "DM-555"
-        val result = restTemplate.getForEntity("http://localhost:8181/task/byKey?jiraKey={jiraKey}", String::class.java, jiraKey)
+        val result = restTemplate.getForEntity("http://localhost:$port/task/byKey?jiraKey={jiraKey}", String::class.java, jiraKey)
 
         assertNotNull(result)
         assertEquals(HttpStatus.OK, result.statusCode)
@@ -44,7 +48,7 @@ class TaskControllerTest {
     fun getTaskListByReleaseTest() {
         val jiraRelease = "1.37.0"
         val result =
-            restTemplate.getForEntity("http://localhost:8181/task/byRelease?jiraRelease={jiraRelease}", String::class.java, jiraRelease)
+            restTemplate.getForEntity("http://localhost:$port/task/byRelease?jiraRelease={jiraRelease}", String::class.java, jiraRelease)
 
         assertNotNull(result)
         assertEquals(HttpStatus.OK, result.statusCode)
@@ -54,6 +58,6 @@ class TaskControllerTest {
 
     @Test(expected = HttpClientErrorException.NotFound::class)
     fun notFoundControllerMethodTest() {
-        restTemplate.getForEntity("http://localhost:8181/task", String::class.java)
+        restTemplate.getForEntity("http://localhost:$port/task", String::class.java)
     }
 }

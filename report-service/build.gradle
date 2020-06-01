@@ -16,6 +16,7 @@ apply plugin: "kotlin-spring" // https://kotlinlang.org/docs/reference/compiler-
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
+group = "ru.morkovka.jira-report-tools"
 version '0.0.1'
 
 repositories {
@@ -26,6 +27,8 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.security:spring-security-core"
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
     implementation 'com.google.code.gson:gson:2.8.5'
@@ -38,12 +41,29 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-task stage(dependsOn: ['build', 'clean'])
-build.mustRunAfter clean
+// clean service and ui files
+task allClean(type: Delete) {
+    final def dirService = "${rootDir}/report-service"
+    final def dirUI = "${rootDir}/report-service-ui"
+    delete "${dirUI}/build"
+    //delete "${dirUI}/node"
+    //delete "${dirUI}/node_modules"
+    delete "${dirUI}/dist"
+    delete "${dirUI}/coverage"
+    delete "${dirService}/src/main/resources/static"
+    delete "${dirService}/build"
+}
 
-task copyToLib(type: Copy) {
+task stage(dependsOn: ['build', 'clean', 'allClean', 'copyAllToLib'])
+allClean.mustRunAfter(clean)
+build.mustRunAfter(allClean)
+
+task copyAllToLib(type: Copy) {
+    //Build report-service-ui first
+    dependsOn(':report-service-ui:copyJsFilesToService')
     into "$buildDir/libs"
     from(configurations.compile)
 }
 
-stage.dependsOn(copyToLib)
+bootJar.dependsOn(copyAllToLib)
+bootJar.mustRunAfter(copyAllToLib)

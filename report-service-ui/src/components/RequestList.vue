@@ -14,10 +14,19 @@
                         </select>
                         <input v-model="requestKey" v-bind:disabled=!requestTypeSelected :placeholder="[[ searchParamType ]]">
                     </p>
-                    <label> Limit by:
-                        <input v-model="requestLimit" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
-                    </label>
-                    <p><button v-on:click="sendRequest" v-bind:disabled=!requestKey>Send</button></p>
+                    <p>
+                        <label> Limit by:
+                            <input v-model="requestLimit" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
+                        </label>
+                    </p>
+                    <p>
+                        <label> Secret code:
+                            <input v-model="token" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
+                        </label>
+                    </p>
+                    <p>
+                        <button v-on:click="sendRequest" v-bind:disabled=!requestKey>Send</button>
+                    </p>
                 </td>
                 <td style="width: 60%">
                     <h3 v-if="firstRequestSend">Result</h3>
@@ -52,6 +61,7 @@
                 requestTypeSelected: '',
                 requestKey: '',
                 requestLimit: 15,
+                token: '',
                 requestOptions: [
                     {
                         text: 'Get issue',
@@ -101,10 +111,11 @@
         methods: {
             sendRequest: function () {
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);
-                let resultUrl = 'http://localhost:8181' + item.url + this.requestKey;
+                let resultUrl = item.url + this.requestKey;
                 if (item.key !== 'getIssue') {
                     resultUrl += '&limit=' + this.requestLimit
                 }
+                resultUrl += '&token=' + this.token
 
                 this.firstRequestSend = true;
                 this.loading = true;
