@@ -2,6 +2,7 @@ package ru.morkovka.report.utils
 
 import org.junit.Assert.*
 import org.junit.Test
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import ru.morkovka.report.utils.TaskUtils.Companion.getNumberFromJiraKey
 import ru.morkovka.report.utils.TaskUtils.Companion.getProjectNameFromJiraKey
 import ru.morkovka.report.utils.TaskUtils.Companion.sortByJiraKey
@@ -75,5 +76,13 @@ class TaskUtilsTest {
         val jiraKey = "D12M-1B23"
 
         assertNotEquals(123, getProjectNameFromJiraKey(jiraKey))
+    }
+    
+    @Test
+    fun checkEncoder() {
+        val encoded = BCryptPasswordEncoder().encode("MorkovkA")
+
+        assertTrue(BCryptPasswordEncoder().matches("MorkovkA", encoded))
+        assertTrue(BCryptPasswordEncoder().matches("MorkovkA", "\$2a\$10\$VRn.zR2KmV/LPfss4Ez5Ne/ITdUA0STzdUKTf0Z6iyWz9/SaQRVYi"))
     }
 }

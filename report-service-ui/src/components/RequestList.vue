@@ -14,10 +14,27 @@
                         </select>
                         <input v-model="requestKey" v-bind:disabled=!requestTypeSelected :placeholder="[[ searchParamType ]]">
                     </p>
-                    <label> Limit by:
-                        <input v-model="requestLimit" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
-                    </label>
-                    <p><button v-on:click="sendRequest" v-bind:disabled=!requestKey>Send</button></p>
+                    <p>
+                        <label> Limit by:
+                            <input v-model="requestLimit" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
+                        </label>
+                    </p>
+                    <p>
+                        <label> Secret code:
+                            <input v-model="token" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
+                        </label>
+                    </p>
+                    <Recaptcha
+                            :sitekey=recaptchaKey
+                            :loadRecaptchaScript="true"
+                            ref="recaptcha"
+                            @verify="onVerify"
+                            @expired="onExpired"
+                            align="center"/>
+                    <!--<button v-on:click="resetRecaptcha"> Reset ReCAPTCHA</button>-->
+                    <p>
+                        <button v-on:click="sendRequest" v-bind:disabled=!isOkToSend>Send</button>
+                    </p>
                 </td>
                 <td style="width: 60%">
                     <h3 v-if="firstRequestSend">Result</h3>
@@ -38,20 +55,24 @@
 <script>
     import Issue from './Issue.vue'
     import Error from './Error.vue'
-    import axios from "axios";
+    import Recaptcha from 'vue-recaptcha';
+    import axios from "axios"
 
     export default {
         name: "JiraRequests",
         components: {
             Issue,
-            Error
+            Error,
+            Recaptcha
         },
 
         data() {
             return {
+                recaptchaKey: '6LfuA_8UAAAAAIaccql90DkNTuR9BL6W6bsyKDtO',
                 requestTypeSelected: '',
                 requestKey: '',
                 requestLimit: 15,
+                token: '',
                 requestOptions: [
                     {
                         text: 'Get issue',
@@ -86,10 +107,14 @@
                 errorStatus: null,
                 loading: false,
                 errored: false,
-                firstRequestSend: false
+                firstRequestSend: false,
+                verified: false
             }
         },
         computed: {
+            isOkToSend() {
+                return this.verified && this.requestKey && this.token;
+            },
             searchParamType: function () {
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);
                 if (item) {
@@ -99,12 +124,24 @@
             }
         },
         methods: {
+            onVerify: function () {
+                this.verified = true
+            },
+            onExpired: function () {
+                this.verified = false
+            },
+            resetRecaptcha() {
+                this.verified = false
+                this.$refs.recaptcha.reset()
+            },
+
             sendRequest: function () {
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);
-                let resultUrl = 'http://localhost:8181' + item.url + this.requestKey;
+                let resultUrl = item.url + this.requestKey;
                 if (item.key !== 'getIssue') {
                     resultUrl += '&limit=' + this.requestLimit
                 }
+                resultUrl += '&token=' + this.token
 
                 this.firstRequestSend = true;
                 this.loading = true;

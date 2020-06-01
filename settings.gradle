@@ -1,3 +1,2 @@
 rootProject.name = 'jira-report-tools'
-include 'report-service'
-
+include(":report-service", ":report-service-ui")
