@@ -17,9 +17,10 @@ class ReleaseUtilsTest {
 
     private fun createReleaseNote(): ReleaseNote {
         val result = ReleaseNote()
+        result.distributions = "DM-815"
         result.changes = ArrayList(
             listOf(
-                "DM-815" + "\t" + "Решенные" + "\t" + 92723 + "\t" + "Решение проблемы с дублями (профили с одним id) из-за близких во времени запросов от КЗД",
+                "DM-815" + "\t" + "Решенные" + "\t" + 92723 + "\t" + "Релиз КСРД",
                 "DM-874" + "\t" + "Решенные" + "\t" + 95825 + "\t" + "Создание операции удаления профилей по массиву mdm_id",
                 "DM-884" + "\t" + "Решенные" + "\t" + 96334 + "\t" + "Перевести вставку гражданина на bulkUpsert"
             )
@@ -38,7 +39,7 @@ class ReleaseUtilsTest {
         val id1 = 92723.toLong()
         val key1 = "DM-815"
         val summary1 =
-            "Решение проблемы с дублями (профили с одним id) из-за близких во времени запросов от КЗД"
+            "Релиз КСРД"
         val status1 = "Решенные"
         val description1 = "Разобраться с двойным инсертом со стороны кзд."
         val fixVersions1 =

@@ -8,6 +8,9 @@ object ReleaseUtils {
         val note = ReleaseNote()
         for ((id, key, summary, status, _, _, comments) in taskList) {
             note.changes?.add(key + "\t" + status + "\t" + id + "\t" + summary)
+            if (summary.startsWith("Релиз КСРД")) {
+                note.distributions = key
+            }
             parseCommentToFields(comments, note)
         }
         return note
