@@ -31,3 +31,5 @@ task copyJsFilesToService(type: Copy) {
     from("$buildDir/dist")
     into("$rootDir/report-service/build/resources/main/static")
 }
+
+task buildForBootRun(dependsOn: ['copyJsFilesToService'])

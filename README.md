@@ -1,5 +1,5 @@
 <p align="center">
-    <img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/workflow/status/MorkovkAs/jira-report-tools/reportServiceCI/master">
+    <img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/workflow/status/MorkovkAs/jira-report-tools/build_master/master">
     <a href="https://github.com/MorkovkAs/jira-report-tools/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/MorkovkAs/jira-report-tools"></a>
     <a href="https://github.com/MorkovkAs/jira-report-tools/blob/master/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/MorkovkAs/jira-report-tools"></a>
 </p>
@@ -7,6 +7,9 @@
 # Jira report tool
 
 It is an app for getting Jira issues, generating reports on them, generating release notes.
+
+## Quick look
+https://jira-report-tools.herokuapp.com/
 
 ## Installation
 

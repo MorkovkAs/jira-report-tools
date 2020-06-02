@@ -6,7 +6,10 @@ It is a REST service for getting Jira issues, generating reports on them, genera
 
 Fill the `jira.url` in `report-service/application.yml` file. See [details](#jiraurl) below
 
-Fill the `jira.auth.basic` with your Jira auth data in `report-service/application.yml` file. See [details](#jiraauthbasic) below
+Fill your Jira auth data. Choose one of:
+- create env variable `JIRA_AUTH_BASIC`
+- fill the `jira.auth.basic` in `report-service/application.yml` file. See [details
+](#jiraauthbasic) below.
 
 Check Gradle is installed and configured
 
@@ -16,12 +19,6 @@ $ cd jira-report-tools/report-service/
 $ ./gradlew build
 $ ./gradlew bootRun
 ```
-
-## Usage preparation
-
-Fill the `jira.url` in `report-service/application.yml` file. See [details](#jiraurl) below
-
-Fill the `jira.auth.basic` with your Jira auth data in `report-service/application.yml` file. See [details](#jiraauthbasic) below
 
 ## Params
 
@@ -37,7 +34,8 @@ Url for Jira.
 ##### jira.auth.basic
 
 *Required*\
-Type: `String`
+Type: `String`\
+Env variable: `JIRA_AUTH_BASIC`
 
 Your auth data for Jira. It should be the result of `"Basic " + base64 (login + ":" + password)`\
 For example: 
@@ -81,6 +79,22 @@ For example:
 jira.comment.deploy.instruction.start=Инструкция по установке
 ```
 
+##### auth.encoder.strength
+
+*Required*\
+Type: `Int`\
+Env variable: `ENCODER_STRENGTH`
+
+Strength the log rounds to use by BCryptPasswordEncoder, between 4 and 31
+
+##### auth.valid.token
+
+*Required*\
+Type: `String`\
+Env variable: `TOKEN`
+
+Key string for checking permissions in requests. It should be sent as the secret code in Authorization header for each request. 
+
 ## Usage
 
 There are examples of common requests in `jira-report-tools/src/test/kotlin/ru/morkovka/report/requestExample/service/`
@@ -88,25 +102,25 @@ There are examples of common requests in `jira-report-tools/src/test/kotlin/ru/m
 ##### Get issues by jql search
 
 Type: `GET`\
-Url: `/task/byJql?jql={jql}&limit={limit}`\
+Url: `/api/task/byJql?jql={jql}&limit={limit}`\
 Returns a list of representation of the issues for the given jql (Jira query language) search.
 
 ##### Get issue by issueIdOrKey
 
 Type: `GET`\
-Url: `/task/byKey?jiraKey={issueIdOrKey}`\
+Url: `/api/task/byKey?jiraKey={issueIdOrKey}`\
 Returns a representation of the issue for the given issue key.
 
 ##### Get issues by fixVersion
 
 Type: `GET`\
-Url: `/task/byRelease?jiraRelease={fixVersion}&limit={limit}`\
+Url: `/api/task/byRelease?jiraRelease={fixVersion}&limit={limit}`\
 Returns a list of representation of the issues for the given fixVersion.
 
-##### Get simple instructions for issues by fixVersion
+##### Get testing info for issues by fixVersion
 
 Type: `GET`\
-Url: `/release/infoByRelease?jiraRelease={fixVersion}&limit={limit}`\
+Url: `/api/release/infoByRelease?jiraRelease={fixVersion}&limit={limit}`\
 Returns test cases and deploy instructions of the issues for the given fixVersion.
 
 ## Thanks!

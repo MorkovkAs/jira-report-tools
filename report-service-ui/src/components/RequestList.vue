@@ -78,31 +78,31 @@
                         text: 'Get issue',
                         key: 'getIssue',
                         searchParam: 'Enter issue key',
-                        url: '/task/byKey?jiraKey='
+                        url: '/api/task/byKey?jiraKey='
                     },
                     {
                         text: 'Get issues by jql',
                         key: 'getIssueByJql',
                         searchParam: 'Enter jql string',
-                        url: '/task/byJql?jql='
+                        url: '/api/task/byJql?jql='
                     },
                     {
                         text: 'Get release issues',
                         key: 'getIssueInRelease',
                         searchParam: 'Enter release',
-                        url: '/task/byRelease?jiraRelease='
+                        url: '/api/task/byRelease?jiraRelease='
                     },
                     {
                         text: 'Get release info',
                         key: 'getReleaseNotes',
                         searchParam: 'Enter release',
-                        url: '/release/infoByRelease?jiraRelease='
+                        url: '/api/release/infoByRelease?jiraRelease='
                     },
                     {
                         text: 'Get release notes',
                         key: 'getReleaseNotes',
                         searchParam: 'Enter release',
-                        url: '/release/getReleaseNote?jiraRelease='
+                        url: '/api/release/getReleaseNote?jiraRelease='
                     }
                 ],
                 response: null,
@@ -147,14 +147,13 @@
                 if (item.key !== 'getIssue') {
                     resultUrl += '&limit=' + this.requestLimit
                 }
-                resultUrl += '&token=' + this.token
 
                 this.firstRequestSend = true;
                 this.loading = true;
                 this.response = null;
 
                 axios
-                    .get(resultUrl)
+                    .get(resultUrl, { 'headers': { 'Authorization': this.token } })
                     .then(response => {
                         this.response = response.data;
                         this.errored = false;

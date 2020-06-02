@@ -1,6 +1,11 @@
 name: build
 
-on: push
+on:
+  push:
+    branches:
+      - '*'         # matches every branch
+      - '*/*'       # matches every branch containing a single '/'
+      - '!master'   # excludes master
 
 jobs:
   build:
@@ -16,5 +21,5 @@ jobs:
       run: chmod +x ./gradlew
     - name: Build with Gradle
       env: # Get variable from GitHub secrets
-        jiraAuthBasic: ${{ secrets.jiraAuthBasic }}
+        JIRA_AUTH_BASIC: ${{ secrets.JIRA_AUTH_BASIC }}
       run: ./gradlew build
