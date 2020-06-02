@@ -1,7 +1,7 @@
 jira:
   url: "https://jira.unidata-platform.com"
   auth:
-    basic: ${jiraAuthBasic:"Basic TW9ya292a0E6bXlTdXBlclBhc3M="}
+    basic: ${JIRA_AUTH_BASIC:Basic TW9ya292a0E6bXlTdXBlclBhc3M=}
   search:
     default:
       project: "DM"

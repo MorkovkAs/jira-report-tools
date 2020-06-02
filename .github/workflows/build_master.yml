@@ -1,4 +1,4 @@
-name: reportServiceCI
+name: build_master
 
 on:
   push:
@@ -20,5 +20,5 @@ jobs:
       run: chmod +x ./gradlew
     - name: Build with Gradle
       env: # Get variable from GitHub secrets
-        jiraAuthBasic: ${{ secrets.jiraAuthBasic }}
+        JIRA_AUTH_BASIC: ${{ secrets.JIRA_AUTH_BASIC }}
       run: ./gradlew build
