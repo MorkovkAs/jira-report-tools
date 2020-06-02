@@ -13,7 +13,6 @@ import org.springframework.web.client.RestTemplate
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Ignore
 class TaskControllerTest {
 
     @Autowired
@@ -21,11 +20,13 @@ class TaskControllerTest {
 
     val port: String = System.getenv("PORT") ?: "8080"
 
+    @Ignore("Need to add Authorization header")
     @Test
     fun getTasksByJqlStringTest() {
         val jiraKey = "DM-555"
         val jql = "project = DM AND issueKey = $jiraKey"
-        val result = restTemplate.getForEntity("http://localhost:$port/task/byJql?jql={jql}", String::class.java, jql)
+
+        val result = restTemplate.getForEntity("http://localhost:$port/api/task/byJql?jql={jql}", String::class.java, jql)
 
         assertNotNull(result)
         assertEquals(HttpStatus.OK, result.statusCode)
@@ -33,10 +34,11 @@ class TaskControllerTest {
         assertTrue(result.body!!.contains(jiraKey))
     }
 
+    @Ignore("Need to add Authorization header")
     @Test
     fun getTaskByKeyTest() {
         val jiraKey = "DM-555"
-        val result = restTemplate.getForEntity("http://localhost:$port/task/byKey?jiraKey={jiraKey}", String::class.java, jiraKey)
+        val result = restTemplate.getForEntity("http://localhost:$port/api/task/byKey?jiraKey={jiraKey}", String::class.java, jiraKey)
 
         assertNotNull(result)
         assertEquals(HttpStatus.OK, result.statusCode)
@@ -44,11 +46,12 @@ class TaskControllerTest {
         assertTrue(result.body!!.contains(jiraKey))
     }
 
+    @Ignore("Need to add Authorization header")
     @Test
     fun getTaskListByReleaseTest() {
         val jiraRelease = "1.37.0"
         val result =
-            restTemplate.getForEntity("http://localhost:$port/task/byRelease?jiraRelease={jiraRelease}", String::class.java, jiraRelease)
+            restTemplate.getForEntity("http://localhost:$port/api/task/byRelease?jiraRelease={jiraRelease}", String::class.java, jiraRelease)
 
         assertNotNull(result)
         assertEquals(HttpStatus.OK, result.statusCode)
@@ -56,8 +59,9 @@ class TaskControllerTest {
         assertTrue(result.body!!.contains(jiraRelease))
     }
 
-    @Test(expected = HttpClientErrorException.NotFound::class)
-    fun notFoundControllerMethodTest() {
-        restTemplate.getForEntity("http://localhost:$port/task", String::class.java)
+    @Test(expected = HttpClientErrorException.Unauthorized::class)
+    fun getApiRequestWithoutAuthDataTest() {
+        val jiraKey = "DM-555"
+        restTemplate.getForEntity("http://localhost:$port/api/task/byKey?jiraKey={jiraKey}", String::class.java, jiraKey)
     }
 }

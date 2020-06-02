@@ -60,7 +60,7 @@ build.mustRunAfter(allClean)
 
 task copyAllToLib(type: Copy) {
     //Build report-service-ui first
-    dependsOn(':report-service-ui:copyJsFilesToService')
+    dependsOn(':report-service-ui:buildForBootRun')
     into "$buildDir/libs"
     from(configurations.compile)
 }
