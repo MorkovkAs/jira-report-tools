@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.entity.Task
 import ru.morkovka.report.service.ReleaseService
+import ru.morkovka.report.utils.ReleaseUtils
 import ru.morkovka.report.utils.TaskUtils.Companion.sortByJiraKey
 import java.util.*
 
@@ -48,6 +50,12 @@ class ReleaseServiceImpl(
         logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
 
         return sortByJiraKey(commentsMap)
+    }
+
+    override fun getReleaseNoteByJiraRelease(jiraFixVersion: String, limit: Int): ReleaseNote {
+        val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
+
+        return ReleaseUtils.taskToRelease(taskList)
     }
 
     companion object {

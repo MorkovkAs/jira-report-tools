@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.bind.annotation.*
+import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.service.ReleaseService
 
 @RestController
@@ -25,6 +26,17 @@ class ReleaseController(
         logger.info("Got request getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraRelease; limit = $limit]")
         checkToken(token)
         return releaseService.getTasksTestingAndDeployInfoByJiraRelease(jiraRelease, limit)
+    }
+
+    @GetMapping("/getReleaseNote")
+    fun getReleaseNoteByJiraRelease(
+        @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
+        @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int,
+        @RequestParam(value = "token") token: String?
+    ): ReleaseNote {
+        logger.info("Got request getReleaseNoteByJiraRelease [jiraFixVersion = $jiraRelease; limit = $limit]")
+        checkToken(token)
+        return releaseService.getReleaseNoteByJiraRelease(jiraRelease, limit)
     }
 
     private fun checkToken(token: String?) {
