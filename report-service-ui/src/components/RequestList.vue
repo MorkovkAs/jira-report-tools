@@ -94,7 +94,7 @@
                     },
                     {
                         text: 'Get release info',
-                        key: 'getReleaseNotes',
+                        key: 'getReleaseInfo',
                         searchParam: 'Enter release',
                         url: '/api/release/infoByRelease?jiraRelease='
                     },
