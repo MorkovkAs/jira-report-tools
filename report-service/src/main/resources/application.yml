@@ -1,7 +1,7 @@
 jira:
   url: "https://jira.unidata-platform.com"
   auth:
-    basic: ${JIRA_AUTH_BASIC:Basic TW9ya292a0E6bXlTdXBlclBhc3M=}
+    basic: ${JIRA_AUTH_BASIC:Basic ZGVuaXMuZ2x1c2hrb3Y6RDUyMjU5OHo=} #TW9ya292a0E6bXlTdXBlclBhc3M=
   search:
     default:
       project: "DM"
@@ -10,6 +10,8 @@ jira:
         test:
           case:
             start: "Сценарий для тестирования на препроде"
+            paragraph: ""
+            default: ""
         deploy:
           instruction:
             start: "Инструкция по установке"
@@ -19,3 +21,15 @@ auth:
     strength: ${ENCODER_STRENGTH:5}
   valid:
     token: ${TOKEN:0}
+
+constant:
+  dbChanges: "БД:\n"
+  dbChangesEmpty: "Настройки и изменения в структуре БД, атрибутах, справочниках"
+  configs: "Конфигурация:\n"
+  configsEmpty: "Конфигурация"
+  installation: "Установка:\n"
+  installationEmpty: "Порядок установок и изменения настроек"
+  testing: "Тестирование:\n"
+  testingEmpty: "План тестирования"
+  rollback: "Откат:\n"
+  rollbackEmpty: "План отката"

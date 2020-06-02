@@ -55,7 +55,7 @@ class TaskServiceImpl(
         logger.info("getTasksByJqlString [jqlString = $jqlString]: jira search completed")
         val searchResultDto = Gson().fromJson(response.body, SearchResultDto::class.java)
         val taskDtoList = searchResultDto.issues
-        val taskList = taskDtoList.stream().filter(Objects::nonNull).map { getTask(it) }.collect(Collectors.toList())
+        val taskList = taskDtoList.stream().filter(Objects::nonNull).map { getTask(it, jiraUrl) }.collect(Collectors.toList())
         logger.info("getTasksByJqlString [jqlString = $jqlString]: casting to List<Task> completed")
 
         return taskList

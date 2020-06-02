@@ -18,7 +18,37 @@ class ReleaseServiceImpl(
     private var taskCommentTestCaseStart: String,
 
     @Value("\${jira.search.default.comment.deploy.instruction.start}")
-    private var taskCommentDeployInstructionsStart: String
+    private var taskCommentDeployInstructionsStart: String,
+
+    @Value("\${constant.dbChanges}")
+    private var dbChanges: String,
+
+    @Value("\${constant.dbChangesEmpty}")
+    private var dbChangesEmpty: String,
+
+    @Value("\${constant.configs}")
+    private var configs: String,
+
+    @Value("\${constant.configsEmpty}")
+    private var configsEmpty: String,
+
+    @Value("\${constant.installation}")
+    private var installation: String,
+
+    @Value("\${constant.installationEmpty}")
+    private var installationEmpty: String,
+
+    @Value("\${constant.testing}")
+    private var testing: String,
+
+    @Value("\${constant.testingEmpty}")
+    private var testingEmpty: String,
+
+    @Value("\${constant.rollback}")
+    private var rollback: String,
+
+    @Value("\${constant.rollbackEmpty}")
+    private var rollbackEmpty: String
 ) : ReleaseService {
 
     @Autowired
@@ -55,11 +85,13 @@ class ReleaseServiceImpl(
     override fun getReleaseNoteByJiraRelease(jiraFixVersion: String, limit: Int): ReleaseNote {
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
 
-        return ReleaseUtils.taskToRelease(taskList)
+        return ReleaseUtils.taskToRelease(taskList, dbChanges, dbChangesEmpty,
+            configs, configsEmpty, installation, installationEmpty,
+            testing, testingEmpty, rollback, rollbackEmpty)
     }
 
     companion object {
-        private fun getCommentsFromTaskListByKeyword(
+        fun getCommentsFromTaskListByKeyword(
             taskList: MutableList<Task>,
             keyword: String
         ): MutableMap<String, MutableList<String>> {
@@ -71,9 +103,8 @@ class ReleaseServiceImpl(
             return comments
         }
 
-        //TODO change here to String::startsWith when the team starts using Jira comments correctly to populate such the data
-        private fun getCommentsFromTaskByKeyword(task: Task, keyword: String) =
-            task.comments.filter { it.contains(keyword) }.toMutableList()
+        fun getCommentsFromTaskByKeyword(task: Task, keyword: String) =
+            task.comments.filter { it.startsWith(keyword) }.map { it.replace(keyword, "") }.toMutableList()
 
         /**
          * Merges two maps. If there are duplicated keys in maps, it merges the corresponded lists
