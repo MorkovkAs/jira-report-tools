@@ -89,7 +89,10 @@ class ReleaseServiceImpl(
 
     override fun getReleaseNoteByJiraRelease(jiraFixVersion: String, limit: Int): ReleaseNote {
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
+        return constructReleaseNote(taskList)
+    }
 
+    override fun constructReleaseNote(taskList: MutableList<Task>): ReleaseNote{
         val note = ReleaseNote()
         for (task in taskList) { //(id, key, summary, status, _, _, comments)
             note.changes?.add(task.key + "; " + task.status + "; " + task.id + "; " + task.summary)
@@ -111,7 +114,9 @@ class ReleaseServiceImpl(
         return note
     }
 
-    override fun releaseNoteToString(note: ReleaseNote): String {
+    override fun releaseNoteToString(jiraFixVersion: String, limit: Int): String {
+        val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
+        val note = constructReleaseNote(taskList)
         val sb = StringBuilder()
         sb.append(note.distributions
                 + "\n" + dbChanges + mutableListToString(note.changes)
