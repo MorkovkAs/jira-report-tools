@@ -3,16 +3,19 @@ package ru.morkovka.report.utils
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
+import org.springframework.beans.factory.annotation.Autowired
 import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.entity.Task
+import ru.morkovka.report.service.ReleaseService
 import ru.morkovka.report.service.impl.ReleaseServiceImpl
 import java.util.*
 
+@Ignore("")
 class ReleaseUtilsTest {
-    @Ignore("class changed")
+    @Autowired
+    private lateinit var releaseServiceImpl: ReleaseService
     @Test
     fun taskToReleaseTest() {
-        val releaseServiceImpl: ReleaseServiceImpl
         val taskList = createTaskList()
         val actualNote = releaseServiceImpl.constructReleaseNote(taskList)
         val expectedNote = createReleaseNote()
@@ -24,9 +27,9 @@ class ReleaseUtilsTest {
         result.distributions = "https://jira.unidata-platform.com/browse/DM-815"
         result.changes = ArrayList(
             listOf(
-                "DM-815" + "; " + "Решенные" + "; " + 92723 + "; " + "Релиз КСРД",
-                "DM-874" + "; " + "Решенные" + "; " + 95825 + "; " + "Создание операции удаления профилей по массиву mdm_id",
-                "DM-884" + "; " + "Решенные" + "; " + 96334 + "; " + "Перевести вставку гражданина на bulkUpsert"
+                "DM-815" + "; " + "Решенные" + "; " + "Релиз КСРД",
+                "DM-874" + "; " + "Решенные" + "; " + "Создание операции удаления профилей по массиву mdm_id",
+                "DM-884" + "; " + "Решенные" + "; " + "Перевести вставку гражданина на bulkUpsert"
             )
         )
         result.dbChanges?.add("Данные по полю с БД")

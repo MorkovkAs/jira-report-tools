@@ -1,7 +1,7 @@
 jira:
   url: "https://jira.unidata-platform.com"
   auth:
-    basic: ${JIRA_AUTH_BASIC:Basic ZGVuaXMuZ2x1c2hrb3Y6RDUyMjU5OHo=} #TW9ya292a0E6bXlTdXBlclBhc3M=
+    basic: ${JIRA_AUTH_BASIC:Basic TW9ya292a0E6bXlTdXBlclBhc3M=}
   search:
     default:
       project: "DM"
@@ -15,34 +15,39 @@ jira:
         deploy:
           instruction:
             start: "Инструкция по установке"
+        release:
+          distribution:
+            start: "Дистрибутивы"
+            paragraph: "h3.Дистрибутивы"
+            default: "Релизов нет"
         new:
           functions:
             start: "Новые функции и исправления"
-            paragraph: ""
+            paragraph: "h3.Новые функции и исправления"
             default: "Новых функций не найдено"
         dataBase:
           changes:
-            start: "Настройка и измененя в структуре БД, атрибутах, справочниках"
-            paragraph: ""
+            start: "Настройка и изменения в структуре БД, атрибутах, справочниках:"
+            paragraph: "h3.Настройка и изменения в структуре БД, атрибутах, справочниках"
             default: ""
         configs:
-          start: "Конфигурация"
-          paragraph: ""
+          start: "Конфигурация:"
+          paragraph: "h3.Конфигурация"
           default: "Конфигурация в нынешней версии не изменена"
         settings:
           changes:
-            start: "Порядок установки и изменения настроек"
-            paragraph: ""
+            start: "Порядок установки и изменения настроек:"
+            paragraph: "h3.Порядок установки и изменения настроек"
             default: "Порядок установка и изменения настроек не обнаружены"
         testing:
           plan:
-            start: "План тестирования"
-            paragraph: ""
+            start: "План тестирования:"
+            paragraph: "h3.План тестирования"
             default: "Прогнать быстрые тесты"
         rollback:
           plan:
-            start: "План отката"
-            paragraph: ""
+            start: "План отката:"
+            paragraph: "h3.План отката"
             default: "Откатить обновленные артефакты на предыдущие версии."
 
 

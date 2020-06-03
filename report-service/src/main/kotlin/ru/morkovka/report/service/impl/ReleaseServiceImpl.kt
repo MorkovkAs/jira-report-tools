@@ -19,41 +19,68 @@ class ReleaseServiceImpl(
     @Value("\${jira.search.default.comment.deploy.instruction.start}")
     private var taskCommentDeployInstructionsStart: String,
 
+    @Value("\${jira.search.default.comment.release.distribution.start}")
+    private var commentReleaseDistributionStart: String,
+
+    @Value("\${jira.search.default.comment.release.distribution.paragraph}")
+    private var commentReleaseDistributionParagraph: String,
+
+    @Value("\${jira.search.default.comment.release.distribution.default}")
+    private var commentReleaseDistributionDefault: String,
+
     @Value("\${jira.search.default.comment.new.functions.start}")
-    private var changes: String,
+    private var commentNewFunctionsStart: String,
+
+    @Value("\${jira.search.default.comment.new.functions.paragraph}")
+    private var commentNewFunctionsParagraph: String,
 
     @Value("\${jira.search.default.comment.new.functions.default}")
-    private var changesEmpty: String,
+    private var commentNewFunctionsDefault: String,
 
     @Value("\${jira.search.default.comment.database.changes.start}")
-    private var dbChanges: String,
+    private var commentDatabaseChangesStart: String,
+
+    @Value("\${jira.search.default.comment.database.changes.paragraph}")
+    private var commentDatabaseChangesParagraph: String,
 
     @Value("\${jira.search.default.comment.database.changes.default}")
-    private var dbChangesEmpty: String,
+    private var commentDatabaseChangesDefault: String,
 
     @Value("\${jira.search.default.comment.configs.start}")
-    private var configs: String,
+    private var commentConfigsStart: String,
+
+    @Value("\${jira.search.default.comment.configs.paragraph}")
+    private var commentConfigsParagraph: String,
 
     @Value("\${jira.search.default.comment.configs.default}")
-    private var configsEmpty: String,
+    private var commentConfigsDefault: String,
 
     @Value("\${jira.search.default.comment.settings.changes.start}")
-    private var installation: String,
+    private var commentSettingsChangesStart: String,
+
+    @Value("\${jira.search.default.comment.settings.changes.paragraph}")
+    private var commentSettingsChangesParagraph: String,
 
     @Value("\${jira.search.default.comment.settings.changes.default}")
-    private var installationEmpty: String,
+    private var commentSettingsChangesDefault: String,
 
     @Value("\${jira.search.default.comment.testing.plan.start}")
-    private var testing: String,
+    private var commentTestingPlanStart: String,
+
+    @Value("\${jira.search.default.comment.testing.plan.paragraph}")
+    private var commentTestingPlanParagraph: String,
 
     @Value("\${jira.search.default.comment.testing.plan.default}")
-    private var testingEmpty: String,
+    private var commentTestingPlanDefault: String,
 
     @Value("\${jira.search.default.comment.rollback.plan.start}")
-    private var rollback: String,
+    private var commentRollbackPlanStart: String,
+
+    @Value("\${jira.search.default.comment.rollback.plan.paragraph}")
+    private var commentRollbackPlanParagraph: String,
 
     @Value("\${jira.search.default.comment.rollback.plan.default}")
-    private var rollbackEmpty: String
+    private var commentRollbackPlanDefault: String
 ) : ReleaseService {
 
     @Autowired
@@ -95,22 +122,23 @@ class ReleaseServiceImpl(
     override fun constructReleaseNote(taskList: MutableList<Task>): ReleaseNote{
         val note = ReleaseNote()
         for (task in taskList) { //(id, key, summary, status, _, _, comments)
-            note.changes?.add(task.key + "; " + task.status + "; " + task.id + "; " + task.summary)
-            if(note.changes?.isEmpty()!!) { note.changes!!.add(changesEmpty) }
+            note.changes?.add(task.key + "; " + task.status + "; " + task.summary)
+            if(note.changes?.isEmpty()!!) { note.changes!!.add(commentNewFunctionsDefault) }
             if (task.summary.startsWith("Релиз КСРД")) {
                 note.distributions = task.key + "; " + task.summary + "; " + task.link
             }
-            note.dbChanges?.addAll(getCommentsFromTaskByKeyword(task, dbChanges))
-            if (note.dbChanges?.isEmpty()!!) { note.dbChanges!!.add(dbChangesEmpty) }
-            note.configs?.addAll(getCommentsFromTaskByKeyword(task, configs))
-            if (note.configs?.isEmpty()!!) { note.configs!!.add(configsEmpty) }
-            note.installation?.addAll(getCommentsFromTaskByKeyword(task, installation))
-            if (note.installation?.isEmpty()!!) { note.installation!!.add(installationEmpty) }
-            note.testing?.addAll(getCommentsFromTaskByKeyword(task, testing))
-            if (note.testing?.isEmpty()!!) { note.testing!!.add(testingEmpty) }
-            note.rollback?.addAll(getCommentsFromTaskByKeyword(task, rollback))
-            if (note.rollback?.isEmpty()!!) { note.rollback!!.add(rollbackEmpty) }
+            note.dbChanges?.addAll(getCommentsFromTaskByKeyword(task, commentDatabaseChangesStart))
+            if (note.dbChanges?.isEmpty()!!) { note.dbChanges!!.add(commentDatabaseChangesDefault) }
+            note.configs?.addAll(getCommentsFromTaskByKeyword(task, commentConfigsStart))
+            if (note.configs?.isEmpty()!!) { note.configs!!.add(commentConfigsDefault) }
+            note.installation?.addAll(getCommentsFromTaskByKeyword(task, commentSettingsChangesStart))
+            if (note.installation?.isEmpty()!!) { note.installation!!.add(commentSettingsChangesDefault) }
+            note.testing?.addAll(getCommentsFromTaskByKeyword(task, commentTestingPlanStart))
+            if (note.testing?.isEmpty()!!) { note.testing!!.add(commentTestingPlanDefault) }
+            note.rollback?.addAll(getCommentsFromTaskByKeyword(task, commentRollbackPlanStart))
+            if (note.rollback?.isEmpty()!!) { note.rollback!!.add(commentRollbackPlanDefault) }
         }
+        if (note.distributions?.isEmpty()!!) {note.distributions = commentReleaseDistributionDefault}
         return note
     }
 
@@ -118,13 +146,13 @@ class ReleaseServiceImpl(
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
         val note = constructReleaseNote(taskList)
         val sb = StringBuilder()
-        sb.append(note.distributions
-                + "\n" + dbChanges + mutableListToString(note.changes)
-                + "\n" + dbChanges + mutableListToString(note.dbChanges)
-                + "\n" + configs + mutableListToString(note.configs)
-                + "\n" + installation + mutableListToString(note.installation)
-                + "\n" + testing + mutableListToString(note.testing)
-                + "\n" + rollback + mutableListToString(note.rollback))
+        sb.append(commentReleaseDistributionParagraph + "\n" + note.distributions
+                + "\n\n" + commentNewFunctionsParagraph + mutableListToString(note.changes)
+                + "\n\n" + commentDatabaseChangesParagraph + mutableListToString(note.dbChanges)
+                + "\n\n" + commentConfigsParagraph + mutableListToString(note.configs)
+                + "\n\n" + commentSettingsChangesParagraph + mutableListToString(note.installation)
+                + "\n\n" + commentTestingPlanParagraph + mutableListToString(note.testing)
+                + "\n\n" + commentRollbackPlanParagraph + mutableListToString(note.rollback))
         return sb.toString()
     }
 
