@@ -38,6 +38,7 @@ class ReleaseNote {
      * План отката
      */
     var rollback: MutableList<String>? = ArrayList()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -65,6 +66,5 @@ class ReleaseNote {
         result = 31 * result + (rollback?.hashCode() ?: 0)
         return result
     }
-
 
 }

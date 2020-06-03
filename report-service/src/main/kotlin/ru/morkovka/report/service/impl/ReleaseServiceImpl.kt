@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service
 import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.entity.Task
 import ru.morkovka.report.service.ReleaseService
-import ru.morkovka.report.utils.ReleaseUtils
 import ru.morkovka.report.utils.TaskUtils.Companion.sortByJiraKey
 import java.util.*
 
@@ -20,34 +19,40 @@ class ReleaseServiceImpl(
     @Value("\${jira.search.default.comment.deploy.instruction.start}")
     private var taskCommentDeployInstructionsStart: String,
 
-    @Value("\${constant.dbChanges}")
+    @Value("\${jira.search.default.comment.new.functions.start}")
+    private var changes: String,
+
+    @Value("\${jira.search.default.comment.new.functions.default}")
+    private var changesEmpty: String,
+
+    @Value("\${jira.search.default.comment.database.changes.start}")
     private var dbChanges: String,
 
-    @Value("\${constant.dbChangesEmpty}")
+    @Value("\${jira.search.default.comment.database.changes.default}")
     private var dbChangesEmpty: String,
 
-    @Value("\${constant.configs}")
+    @Value("\${jira.search.default.comment.configs.start}")
     private var configs: String,
 
-    @Value("\${constant.configsEmpty}")
+    @Value("\${jira.search.default.comment.configs.default}")
     private var configsEmpty: String,
 
-    @Value("\${constant.installation}")
+    @Value("\${jira.search.default.comment.settings.changes.start}")
     private var installation: String,
 
-    @Value("\${constant.installationEmpty}")
+    @Value("\${jira.search.default.comment.settings.changes.default}")
     private var installationEmpty: String,
 
-    @Value("\${constant.testing}")
+    @Value("\${jira.search.default.comment.testing.plan.start}")
     private var testing: String,
 
-    @Value("\${constant.testingEmpty}")
+    @Value("\${jira.search.default.comment.testing.plan.default}")
     private var testingEmpty: String,
 
-    @Value("\${constant.rollback}")
+    @Value("\${jira.search.default.comment.rollback.plan.start}")
     private var rollback: String,
 
-    @Value("\${constant.rollbackEmpty}")
+    @Value("\${jira.search.default.comment.rollback.plan.default}")
     private var rollbackEmpty: String
 ) : ReleaseService {
 
@@ -85,9 +90,47 @@ class ReleaseServiceImpl(
     override fun getReleaseNoteByJiraRelease(jiraFixVersion: String, limit: Int): ReleaseNote {
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
 
-        return ReleaseUtils.taskToRelease(taskList, dbChanges, dbChangesEmpty,
-            configs, configsEmpty, installation, installationEmpty,
-            testing, testingEmpty, rollback, rollbackEmpty)
+        val note = ReleaseNote()
+        for (task in taskList) { //(id, key, summary, status, _, _, comments)
+            note.changes?.add(task.key + "; " + task.status + "; " + task.id + "; " + task.summary)
+            if(note.changes?.isEmpty()!!) { note.changes!!.add(changesEmpty) }
+            if (task.summary.startsWith("Релиз КСРД")) {
+                note.distributions = task.key + "; " + task.summary + "; " + task.link
+            }
+            note.dbChanges?.addAll(getCommentsFromTaskByKeyword(task, dbChanges))
+            if (note.dbChanges?.isEmpty()!!) { note.dbChanges!!.add(dbChangesEmpty) }
+            note.configs?.addAll(getCommentsFromTaskByKeyword(task, configs))
+            if (note.configs?.isEmpty()!!) { note.configs!!.add(configsEmpty) }
+            note.installation?.addAll(getCommentsFromTaskByKeyword(task, installation))
+            if (note.installation?.isEmpty()!!) { note.installation!!.add(installationEmpty) }
+            note.testing?.addAll(getCommentsFromTaskByKeyword(task, testing))
+            if (note.testing?.isEmpty()!!) { note.testing!!.add(testingEmpty) }
+            note.rollback?.addAll(getCommentsFromTaskByKeyword(task, rollback))
+            if (note.rollback?.isEmpty()!!) { note.rollback!!.add(rollbackEmpty) }
+        }
+        return note
+    }
+
+    override fun releaseNoteToString(note: ReleaseNote): String {
+        val sb = StringBuilder()
+        sb.append(note.distributions
+                + "\n" + dbChanges + mutableListToString(note.changes)
+                + "\n" + dbChanges + mutableListToString(note.dbChanges)
+                + "\n" + configs + mutableListToString(note.configs)
+                + "\n" + installation + mutableListToString(note.installation)
+                + "\n" + testing + mutableListToString(note.testing)
+                + "\n" + rollback + mutableListToString(note.rollback))
+        return sb.toString()
+    }
+
+    private fun mutableListToString(list: MutableList<String>?): String {
+        val sb = StringBuilder()
+        if (list != null) {
+            for (string in list) {
+                sb.append("\n").append(string)
+            }
+        }
+        return sb.toString()
     }
 
     companion object {

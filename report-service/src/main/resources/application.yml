@@ -15,21 +15,39 @@ jira:
         deploy:
           instruction:
             start: "Инструкция по установке"
+        new:
+          functions:
+            start: "Новые функции и исправления"
+            paragraph: ""
+            default: "Новых функций не найдено"
+        dataBase:
+          changes:
+            start: "Настройка и измененя в структуре БД, атрибутах, справочниках"
+            paragraph: ""
+            default: ""
+        configs:
+          start: "Конфигурация"
+          paragraph: ""
+          default: "Конфигурация в нынешней версии не изменена"
+        settings:
+          changes:
+            start: "Порядок установки и изменения настроек"
+            paragraph: ""
+            default: "Порядок установка и изменения настроек не обнаружены"
+        testing:
+          plan:
+            start: "План тестирования"
+            paragraph: ""
+            default: "Прогнать быстрые тесты"
+        rollback:
+          plan:
+            start: "План отката"
+            paragraph: ""
+            default: "Откатить обновленные артефакты на предыдущие версии."
+
 
 auth:
   encoder:
     strength: ${ENCODER_STRENGTH:5}
   valid:
     token: ${TOKEN:0}
-
-constant:
-  dbChanges: "БД:\n"
-  dbChangesEmpty: "Настройки и изменения в структуре БД, атрибутах, справочниках"
-  configs: "Конфигурация:\n"
-  configsEmpty: "Конфигурация"
-  installation: "Установка:\n"
-  installationEmpty: "Порядок установок и изменения настроек"
-  testing: "Тестирование:\n"
-  testingEmpty: "План тестирования"
-  rollback: "Откат:\n"
-  rollbackEmpty: "План отката"

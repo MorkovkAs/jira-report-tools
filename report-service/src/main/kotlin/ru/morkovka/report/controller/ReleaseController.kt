@@ -26,4 +26,10 @@ class ReleaseController(
         @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
         @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
     ): ReleaseNote = releaseService.getReleaseNoteByJiraRelease(jiraRelease, limit)
+
+    @GetMapping("/releaseNoteToString")
+    fun releaseNoteByJiraReleaseToString(
+        @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
+        @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
+    ): ReleaseNote = releaseService.getReleaseNoteByJiraRelease(jiraRelease, limit)
 }

@@ -7,4 +7,6 @@ interface ReleaseService {
     fun getTasksTestingAndDeployInfoByJiraRelease(jiraFixVersion: String, limit: Int): MutableMap<String, MutableList<String>>
 
     fun getReleaseNoteByJiraRelease(jiraFixVersion: String, limit: Int): ReleaseNote
+
+    fun releaseNoteToString(note: ReleaseNote): String
 }
