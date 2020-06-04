@@ -44,39 +44,3 @@ data class ReleaseNote (
      */
     var rollback: MutableList<String> = ArrayList()
 )
-    {
-        override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as ReleaseNote
-
-        if (taskIn != other.taskIn) return false
-        if (sourceCode != other.sourceCode) return false
-        if (artifact != other.artifact) return false
-        if (features != other.features) return false
-        if (dbChanges != other.dbChanges) return false
-        if (monitoringChanges != other.monitoringChanges) return false
-        if (configs != other.configs) return false
-        if (deploy != other.deploy) return false
-        if (testCase != other.testCase) return false
-        if (rollback != other.rollback) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = taskIn.hashCode()
-        result = 31 * result + sourceCode.hashCode()
-        result = 31 * result + artifact.hashCode()
-        result = 31 * result + (features.hashCode())
-        result = 31 * result + (dbChanges.hashCode())
-        result = 31 * result + (monitoringChanges.hashCode())
-        result = 31 * result + (configs.hashCode())
-        result = 31 * result + (deploy.hashCode())
-        result = 31 * result + (testCase.hashCode())
-        result = 31 * result + (rollback.hashCode())
-        return result
-    }
-
-}

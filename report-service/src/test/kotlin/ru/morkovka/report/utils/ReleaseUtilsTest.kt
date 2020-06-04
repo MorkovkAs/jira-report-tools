@@ -6,20 +6,25 @@ import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.entity.Task
-import ru.morkovka.report.service.ReleaseService
+import ru.morkovka.report.service.impl.ReleaseServiceImpl
 import java.util.*
 
 @Ignore("")
 class ReleaseUtilsTest {
     @Autowired
-    private lateinit var releaseServiceImpl: ReleaseService
+    private lateinit var releaseServiceImpl: ReleaseServiceImpl
+//            = ReleaseServiceImpl(
+//        "h3.Задача в Jira заказчика",
+//        "Релиз КСРД",
+//        "h3.Задача в Jira ТД"
+//    )
 
     @Test
-    fun taskToReleaseTest() {
+    fun getReleaseNoteFromTaskList() {
         val taskList = createTaskList()
-        //val actualNote = releaseServiceImpl.getReleaseNoteFromTaskList(taskList)
-        //val expectedNote = createReleaseNote()
-        //Assert.assertEquals(expectedNote, actualNote)
+        val actualNote = releaseServiceImpl.getReleaseNoteFromTaskList(taskList)
+        val expectedNote = createReleaseNote()
+        Assert.assertEquals(expectedNote, actualNote)
     }
 
     private fun createReleaseNote(): ReleaseNote {
@@ -27,16 +32,15 @@ class ReleaseUtilsTest {
         result.taskIn = "https://jira.unidata-platform.com/browse/DM-815"
         result.features = ArrayList(
             listOf(
-                "DM-815" + "; " + "Решенные" + "; " + "Релиз КСРД",
                 "DM-874" + "; " + "Решенные" + "; " + "Создание операции удаления профилей по массиву mdm_id",
                 "DM-884" + "; " + "Решенные" + "; " + "Перевести вставку гражданина на bulkUpsert"
             )
         )
-        result.dbChanges?.add("Данные по полю с БД")
-        result.configs?.add("Данные по полю с конфигурацией")
-        result.deploy?.add("Данные по полю с установкой")
-        result.testCase?.add("Данные по полю с тестированием")
-        result.rollback?.add("Данные по полю с откатом")
+        result.dbChanges.add("Данные по полю с БД")
+        result.configs.add("Данные по полю с конфигурацией")
+        result.deploy.add("Данные по полю с установкой")
+        result.testCase.add("Данные по полю с тестированием")
+        result.rollback.add("Данные по полю с откатом")
         return result
     }
 
@@ -87,7 +91,7 @@ class ReleaseUtilsTest {
             ArrayList(listOf("1.37.0"))
         val comments3 = ArrayList(
             listOf(
-                "Откат: Данные по полю с откатом"
+                "План отката:\n" + "Данные по полю с откатом"
             )
         )
         val task3 =

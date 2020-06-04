@@ -73,20 +73,20 @@ class ReleaseServiceImpl (
                     + "\n\n" + taskInParagraph + "\n" + note.taskIn
                     + "\n\n" + commentProperties.sourceCode.paragraph + "\n" + note.sourceCode
                     + "\n\n" + commentProperties.artifact.paragraph + "\n" + note.artifact
-                    + "\n\n" + commentProperties.newFeature.paragraph + note.features.joinToString("\n")
-                    + "\n\n" + commentProperties.databaseChange.paragraph + note.dbChanges.joinToString("\n")
-                    + "\n\n" + commentProperties.monitoringChange.paragraph + note.monitoringChanges.joinToString("\n")
-                    + "\n\n" + commentProperties.config.paragraph + note.configs.joinToString("\n")
-                    + "\n\n" + commentProperties.deployInstruction.paragraph + note.deploy.joinToString("\n")
-                    + "\n\n" + commentProperties.testCase.paragraph + note.testCase.joinToString("\n")
-                    + "\n\n" + commentProperties.rollbackAction.paragraph + note.rollback.joinToString("\n")
+                    + "\n\n" + commentProperties.newFeature.paragraph + "\n" + note.features.joinToString("\n")
+                    + "\n\n" + commentProperties.databaseChange.paragraph + "\n" + note.dbChanges.joinToString("\n")
+                    + "\n\n" + commentProperties.monitoringChange.paragraph + "\n" + note.monitoringChanges.joinToString("\n")
+                    + "\n\n" + commentProperties.config.paragraph + "\n" + note.configs.joinToString("\n")
+                    + "\n\n" + commentProperties.deployInstruction.paragraph + "\n" + note.deploy.joinToString("\n")
+                    + "\n\n" + commentProperties.testCase.paragraph + "\n" + note.testCase.joinToString("\n")
+                    + "\n\n" + commentProperties.rollbackAction.paragraph + "\n" + note.rollback.joinToString("\n")
         )
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: ReleaseNote to String convertation completed")
 
         return sb.toString()
     }
 
-    private fun getReleaseNoteFromTaskList(taskList: MutableList<Task>): ReleaseNote {
+    fun getReleaseNoteFromTaskList(taskList: MutableList<Task>): ReleaseNote {
         val note = ReleaseNote()
 
         logger.info("getReleaseNoteFromTaskList [taskList = $taskList]: ReleaseNote creation started")
@@ -98,7 +98,7 @@ class ReleaseServiceImpl (
             note.sourceCode = getCommentsFromTaskByKeyword(task, commentProperties.sourceCode.start).joinToString("\n")
             note.artifact = getCommentsFromTaskByKeyword(task, commentProperties.artifact.start).joinToString("\n")
             if(!task.summary.contains(taskInStart)){
-                note.features.add(task.key + "; " + task.summary + "; " + task.link)
+                note.features.add("\n" + task.key + "; " + task.summary + "; " + task.link)
             }
             note.dbChanges.addAll(getCommentsFromTaskByKeyword(task, commentProperties.databaseChange.start))
             note.monitoringChanges.addAll(getCommentsFromTaskByKeyword(task, commentProperties.monitoringChange.start))
