@@ -1,6 +1,5 @@
 package ru.morkovka.report.entity.mapper
 
-import org.springframework.beans.factory.annotation.Value
 import ru.morkovka.report.entity.Task
 import ru.morkovka.report.entity.dto.TaskDto
 import java.util.*
