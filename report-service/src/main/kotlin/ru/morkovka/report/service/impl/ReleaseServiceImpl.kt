@@ -3,6 +3,7 @@ package ru.morkovka.report.service.impl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import ru.morkovka.report.CommentProperties
 import ru.morkovka.report.entity.ReleaseNote
@@ -12,7 +13,14 @@ import ru.morkovka.report.utils.TaskUtils.Companion.sortByJiraKey
 import java.util.*
 
 @Service
-class ReleaseServiceImpl : ReleaseService {
+class ReleaseServiceImpl (
+    @Value("\${jira.search.default.task.out.paragraph}")
+    val taskOutParagraph: String,
+    @Value("\${jira.search.default.task.in.start}")
+    val taskInStart: String,
+    @Value("\${jira.search.default.task.in.paragraph}")
+    val taskInParagraph: String
+) : ReleaseService {
 
     @Autowired
     private lateinit var commentProperties: CommentProperties
@@ -39,8 +47,8 @@ class ReleaseServiceImpl : ReleaseService {
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
 
         commentsMap = mergeMaps(
-            getCommentsFromTaskListByKeyword(taskList, commentProperties.testCaseStart),
-            getCommentsFromTaskListByKeyword(taskList, commentProperties.deployInstructionStart)
+            getCommentsFromTaskListByKeyword(taskList, commentProperties.testCase.start),
+            getCommentsFromTaskListByKeyword(taskList, commentProperties.deployInstruction.start)
         )
 
         logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
@@ -58,17 +66,17 @@ class ReleaseServiceImpl : ReleaseService {
         val note = getReleaseNoteFromTaskList(taskList)
         val sb = StringBuilder()
         sb.append(
-            commentProperties.taskOutParagraph + "\n"
-                    + "\n\n" + commentProperties.taskInParagraph + "\n" + note.taskIn
-                    + "\n\n" + commentProperties.sourceCodeParagraph + "\n" + note.sourceCode
-                    + "\n\n" + commentProperties.artifactParagraph + "\n" + note.artifact
-                    + "\n\n" + commentProperties.newFeatureParagraph + mutableListToString(note.features)
-                    + "\n\n" + commentProperties.databaseChangeParagraph + mutableListToString(note.dbChanges)
-                    + "\n\n" + commentProperties.monitoringChangeParagraph + mutableListToString(note.monitoringChanges)
-                    + "\n\n" + commentProperties.configParagraph + mutableListToString(note.configs)
-                    + "\n\n" + commentProperties.deployInstructionParagraph + mutableListToString(note.deploy)
-                    + "\n\n" + commentProperties.testCaseParagraph + mutableListToString(note.testCase)
-                    + "\n\n" + commentProperties.rollbackActionParagraph + mutableListToString(note.rollback)
+            taskOutParagraph + "\n"
+                    + "\n\n" + taskInParagraph + "\n" + note.taskIn
+                    + "\n\n" + commentProperties.sourceCode.paragraph + "\n" + note.sourceCode
+                    + "\n\n" + commentProperties.artifact.paragraph + "\n" + note.artifact
+                    + "\n\n" + commentProperties.newFeature.paragraph + mutableListToString(note.features)
+                    + "\n\n" + commentProperties.databaseChange.paragraph + mutableListToString(note.dbChanges)
+                    + "\n\n" + commentProperties.monitoringChange.paragraph + mutableListToString(note.monitoringChanges)
+                    + "\n\n" + commentProperties.config.paragraph + mutableListToString(note.configs)
+                    + "\n\n" + commentProperties.deployInstruction.paragraph + mutableListToString(note.deploy)
+                    + "\n\n" + commentProperties.testCase.paragraph + mutableListToString(note.testCase)
+                    + "\n\n" + commentProperties.rollbackAction.paragraph + mutableListToString(note.rollback)
         )
         return sb.toString()
     }
@@ -77,48 +85,48 @@ class ReleaseServiceImpl : ReleaseService {
         val note = ReleaseNote()
 
         for (task in taskList) {
-            if (task.summary.startsWith(commentProperties.taskInStart)) {
+            if (task.summary.startsWith(taskInStart)) {
                 note.taskIn = task.key + "; " + task.summary + "; " + task.link
             }
-            note.sourceCode = mutableListToString(getCommentsFromTaskByKeyword(task, commentProperties.sourceCodeStart))
-            note.artifact = mutableListToString(getCommentsFromTaskByKeyword(task, commentProperties.artifactStart))
+            note.sourceCode = mutableListToString(getCommentsFromTaskByKeyword(task, commentProperties.sourceCode.start))
+            note.artifact = mutableListToString(getCommentsFromTaskByKeyword(task, commentProperties.artifact.start))
             note.features?.add(task.key + "; " + task.summary + "; " + task.link)
-            note.dbChanges?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.databaseChangeStart))
-            note.monitoringChanges?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.monitoringChangeStart))
-            note.configs?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.configStart))
-            note.deploy?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.deployInstructionStart))
-            note.testCase?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.testCaseStart))
-            note.rollback?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.rollbackActionStart))
+            note.dbChanges?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.databaseChange.start))
+            note.monitoringChanges?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.monitoringChange.start))
+            note.configs?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.config.start))
+            note.deploy?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.deployInstruction.start))
+            note.testCase?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.testCase.start))
+            note.rollback?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.rollbackAction.start))
         }
         if (note.sourceCode.isEmpty()) {
-            note.sourceCode = commentProperties.sourceCodeDefault
+            note.sourceCode = commentProperties.sourceCode.default
         }
         if (note.artifact.isEmpty()) {
-            note.artifact = commentProperties.artifactDefault
+            note.artifact = commentProperties.artifact.default
         }
         if (note.features?.isEmpty()!!) {
-            note.features!!.add(commentProperties.newFeatureDefault)
+            note.features!!.add(commentProperties.newFeature.default)
         }
         if (note.dbChanges?.isEmpty()!!) {
-            note.dbChanges!!.add(commentProperties.databaseChangeDefault)
+            note.dbChanges!!.add(commentProperties.databaseChange.default)
         }
         if (note.monitoringChanges?.isEmpty()!!) {
-            note.monitoringChanges!!.add(commentProperties.monitoringChangeDefault)
+            note.monitoringChanges!!.add(commentProperties.monitoringChange.default)
         }
         if (note.configs?.isEmpty()!!) {
-            note.configs!!.add(commentProperties.configDefault)
+            note.configs!!.add(commentProperties.config.default)
         }
         if (note.deploy?.isEmpty()!!) {
-            note.deploy!!.add(commentProperties.deployInstructionDefault)
+            note.deploy!!.add(commentProperties.deployInstruction.default)
         }
         if (note.testCase?.isEmpty()!!) {
-            note.testCase!!.add(commentProperties.testCaseDefault)
+            note.testCase!!.add(commentProperties.testCase.default)
         }
         if (note.rollback?.isEmpty()!!) {
-            note.rollback!!.add(commentProperties.rollbackActionDefault)
+            note.rollback!!.add(commentProperties.rollbackAction.default)
         }
         if (note.taskIn?.isEmpty()!!) {
-            note.taskIn = commentProperties.taskInParagraph
+            note.taskIn = taskInParagraph
         }
         return note
     }
