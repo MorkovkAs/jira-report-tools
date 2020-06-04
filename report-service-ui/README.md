@@ -2,15 +2,13 @@
 
 It is a Vue.js client for getting Jira issues, getting reports on them, getting release notes.
 
-![](src/assets/Screenshot_1.jpg)
-
 ## Installation
 ```
 cd jira-report-tools/report-service-ui/
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Compiles and hot-reloads for development purpose
 ```
 npm run serve
 ```

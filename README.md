@@ -9,20 +9,24 @@
 It is an app for getting Jira issues, generating reports on them, generating release notes.
 
 ## Quick look
-https://jira-report-tools.herokuapp.com/
+https://jira-report-tools.herokuapp.com/\
+![](report-service-ui/src/assets/Screenshot_1.jpg)
 
 ## Installation
+
+Check [Gradle](https://gradle.org/) and [Node.js with npm](https://nodejs.org/en/download/) are installed and configured
 
 Clone the source locally:
 ```
 $ git clone https://github.com/MorkovkAs/jira-report-tools/
 ```
-
-Check [Gradle](https://gradle.org/) and [Node.js with npm](https://nodejs.org/en/download/) are installed and configured
-
-Build and install `report-service` module. See [instructions](report-service/README.md#installation)
-
-Build and install `report-service-ui` module. See [instructions](report-service-ui/README.md#installation)
+Build and run project:
+```
+$ cd jira-report-tools/
+$ ./gradlew build
+$ ./gradlew bootRun
+```
+Go to [localhost](http://localhost:8080) page.
 
 ## Modules
 1. `report-service` containing server side logic such as request processing, Jira integration, generating release notes. [Details](report-service/README.md)
@@ -30,9 +34,10 @@ Build and install `report-service-ui` module. See [instructions](report-service-
 
 ## To do list
 * [x] commit `report-service` package with server side
-* [x] commit `report-service-ui` package with basic implementation of client side on Vue.js
+* [x] commit `report-service-ui` package with basic implementation of a client side on Vue.js
 * [x] upgrade client side to support sending requests of all types
-* [ ] conversion of the release notes, in accordance with our project template
+* [x] conversion of the release notes, in accordance with our project template
+* [x] deploy to Heroku
 * [ ] creating tasks with release info
 * [ ] adding UI form validation
 * [ ] some cool things:)

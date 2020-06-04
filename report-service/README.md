@@ -2,23 +2,13 @@
 
 It is a REST service for getting Jira issues, generating reports on them, generating release notes.
 
-## Installation
+## Configuration
 
 Fill the `jira.url` in `report-service/application.yml` file. See [details](#jiraurl) below
 
 Fill your Jira auth data. Choose one of:
 - create env variable `JIRA_AUTH_BASIC`
-- fill the `jira.auth.basic` in `report-service/application.yml` file. See [details
-](#jiraauthbasic) below.
-
-Check Gradle is installed and configured
-
-Build and install with gradle
-```
-$ cd jira-report-tools/report-service/
-$ ./gradlew build
-$ ./gradlew bootRun
-```
+- fill the `jira.auth.basic` in `report-service/application.yml` file. See [details](#jiraauthbasic) below.
 
 ## Params
 
