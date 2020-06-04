@@ -9,7 +9,8 @@
 It is an app for getting Jira issues, generating reports on them, generating release notes.
 
 ## Quick look
-https://jira-report-tools.herokuapp.com/\
+https://jira-report-tools.herokuapp.com/
+
 ![](report-service-ui/src/assets/Screenshot_1.jpg)
 
 ## Installation
