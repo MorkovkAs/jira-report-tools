@@ -15,7 +15,7 @@ class ReleaseController(
     val releaseService: ReleaseService
 ) {
 
-    @GetMapping("/infoByRelease1")
+    @GetMapping("/infoByRelease")
     fun getTasksTestingAndDeployInfoByJiraRelease(
         @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
         @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
@@ -27,7 +27,7 @@ class ReleaseController(
         @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
     ): ReleaseNote = releaseService.getReleaseNoteByJiraRelease(jiraRelease, limit)
 
-    @GetMapping("/infoByRelease")
+    @GetMapping("/getReleaseNoteString")
     fun releaseNoteByJiraReleaseToString(
         @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
         @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int

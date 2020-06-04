@@ -1,23 +1,28 @@
 package ru.morkovka.report.entity
 
-import java.util.*
 import kotlin.collections.ArrayList
 
 class ReleaseNote {
     /**
-     * Дистрибутивы
+     * Задача в нашей джире
      */
-    var distributions: String? = String()
+    var taskIn: String? = String()
+
+    var sourceCode: String = String()
+
+    var artifact: String = String()
 
     /**
      * Новые функции и исправления
      */
-    var changes: MutableList<String>? = ArrayList()
+    var features: MutableList<String>? = ArrayList()
 
     /**
      * Настройки и изменения в структуре БД
      */
     var dbChanges: MutableList<String>? = ArrayList()
+
+    var monitoringChanges: MutableList<String>? = ArrayList()
 
     /**
      * Конфигурация
@@ -27,12 +32,12 @@ class ReleaseNote {
     /**
      * Порядок установки и изменения настроек
      */
-    var installation: MutableList<String>? = ArrayList()
+    var deploy: MutableList<String>? = ArrayList()
 
     /**
      * План тестирования
      */
-    var testing: MutableList<String>? = ArrayList()
+    var testCase: MutableList<String>? = ArrayList()
 
     /**
      * План отката
@@ -45,24 +50,30 @@ class ReleaseNote {
 
         other as ReleaseNote
 
-        if (distributions != other.distributions) return false
-        if (changes != other.changes) return false
+        if (taskIn != other.taskIn) return false
+        if (sourceCode != other.sourceCode) return false
+        if (artifact != other.artifact) return false
+        if (features != other.features) return false
         if (dbChanges != other.dbChanges) return false
+        if (monitoringChanges != other.monitoringChanges) return false
         if (configs != other.configs) return false
-        if (installation != other.installation) return false
-        if (testing != other.testing) return false
+        if (deploy != other.deploy) return false
+        if (testCase != other.testCase) return false
         if (rollback != other.rollback) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = distributions?.hashCode() ?: 0
-        result = 31 * result + (changes?.hashCode() ?: 0)
+        var result = taskIn?.hashCode() ?: 0
+        result = 31 * result + sourceCode.hashCode()
+        result = 31 * result + artifact.hashCode()
+        result = 31 * result + (features?.hashCode() ?: 0)
         result = 31 * result + (dbChanges?.hashCode() ?: 0)
+        result = 31 * result + (monitoringChanges?.hashCode() ?: 0)
         result = 31 * result + (configs?.hashCode() ?: 0)
-        result = 31 * result + (installation?.hashCode() ?: 0)
-        result = 31 * result + (testing?.hashCode() ?: 0)
+        result = 31 * result + (deploy?.hashCode() ?: 0)
+        result = 31 * result + (testCase?.hashCode() ?: 0)
         result = 31 * result + (rollback?.hashCode() ?: 0)
         return result
     }

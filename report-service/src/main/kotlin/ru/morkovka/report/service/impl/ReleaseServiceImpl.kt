@@ -3,8 +3,8 @@ package ru.morkovka.report.service.impl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import ru.morkovka.report.CommentProperties
 import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.entity.Task
 import ru.morkovka.report.service.ReleaseService
@@ -12,76 +12,10 @@ import ru.morkovka.report.utils.TaskUtils.Companion.sortByJiraKey
 import java.util.*
 
 @Service
-class ReleaseServiceImpl(
-    @Value("\${jira.search.default.comment.test.case.start}")
-    private var taskCommentTestCaseStart: String,
+class ReleaseServiceImpl : ReleaseService {
 
-    @Value("\${jira.search.default.comment.deploy.instruction.start}")
-    private var taskCommentDeployInstructionsStart: String,
-
-    @Value("\${jira.search.default.comment.release.distribution.start}")
-    private var commentReleaseDistributionStart: String,
-
-    @Value("\${jira.search.default.comment.release.distribution.paragraph}")
-    private var commentReleaseDistributionParagraph: String,
-
-    @Value("\${jira.search.default.comment.release.distribution.default}")
-    private var commentReleaseDistributionDefault: String,
-
-    @Value("\${jira.search.default.comment.new.functions.start}")
-    private var commentNewFunctionsStart: String,
-
-    @Value("\${jira.search.default.comment.new.functions.paragraph}")
-    private var commentNewFunctionsParagraph: String,
-
-    @Value("\${jira.search.default.comment.new.functions.default}")
-    private var commentNewFunctionsDefault: String,
-
-    @Value("\${jira.search.default.comment.database.changes.start}")
-    private var commentDatabaseChangesStart: String,
-
-    @Value("\${jira.search.default.comment.database.changes.paragraph}")
-    private var commentDatabaseChangesParagraph: String,
-
-    @Value("\${jira.search.default.comment.database.changes.default}")
-    private var commentDatabaseChangesDefault: String,
-
-    @Value("\${jira.search.default.comment.configs.start}")
-    private var commentConfigsStart: String,
-
-    @Value("\${jira.search.default.comment.configs.paragraph}")
-    private var commentConfigsParagraph: String,
-
-    @Value("\${jira.search.default.comment.configs.default}")
-    private var commentConfigsDefault: String,
-
-    @Value("\${jira.search.default.comment.settings.changes.start}")
-    private var commentSettingsChangesStart: String,
-
-    @Value("\${jira.search.default.comment.settings.changes.paragraph}")
-    private var commentSettingsChangesParagraph: String,
-
-    @Value("\${jira.search.default.comment.settings.changes.default}")
-    private var commentSettingsChangesDefault: String,
-
-    @Value("\${jira.search.default.comment.testing.plan.start}")
-    private var commentTestingPlanStart: String,
-
-    @Value("\${jira.search.default.comment.testing.plan.paragraph}")
-    private var commentTestingPlanParagraph: String,
-
-    @Value("\${jira.search.default.comment.testing.plan.default}")
-    private var commentTestingPlanDefault: String,
-
-    @Value("\${jira.search.default.comment.rollback.plan.start}")
-    private var commentRollbackPlanStart: String,
-
-    @Value("\${jira.search.default.comment.rollback.plan.paragraph}")
-    private var commentRollbackPlanParagraph: String,
-
-    @Value("\${jira.search.default.comment.rollback.plan.default}")
-    private var commentRollbackPlanDefault: String
-) : ReleaseService {
+    @Autowired
+    private lateinit var commentProperties: CommentProperties
 
     @Autowired
     private lateinit var taskServiceImpl: TaskServiceImpl
@@ -105,8 +39,8 @@ class ReleaseServiceImpl(
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
 
         commentsMap = mergeMaps(
-            getCommentsFromTaskListByKeyword(taskList, taskCommentTestCaseStart),
-            getCommentsFromTaskListByKeyword(taskList, taskCommentDeployInstructionsStart)
+            getCommentsFromTaskListByKeyword(taskList, commentProperties.testCaseStart),
+            getCommentsFromTaskListByKeyword(taskList, commentProperties.deployInstructionStart)
         )
 
         logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
@@ -116,44 +50,77 @@ class ReleaseServiceImpl(
 
     override fun getReleaseNoteByJiraRelease(jiraFixVersion: String, limit: Int): ReleaseNote {
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
-        return constructReleaseNote(taskList)
-    }
-
-    override fun constructReleaseNote(taskList: MutableList<Task>): ReleaseNote{
-        val note = ReleaseNote()
-        for (task in taskList) { //(id, key, summary, status, _, _, comments)
-            note.changes?.add(task.key + "; " + task.status + "; " + task.summary)
-            if(note.changes?.isEmpty()!!) { note.changes!!.add(commentNewFunctionsDefault) }
-            if (task.summary.startsWith("Релиз КСРД")) {
-                note.distributions = task.key + "; " + task.summary + "; " + task.link
-            }
-            note.dbChanges?.addAll(getCommentsFromTaskByKeyword(task, commentDatabaseChangesStart))
-            if (note.dbChanges?.isEmpty()!!) { note.dbChanges!!.add(commentDatabaseChangesDefault) }
-            note.configs?.addAll(getCommentsFromTaskByKeyword(task, commentConfigsStart))
-            if (note.configs?.isEmpty()!!) { note.configs!!.add(commentConfigsDefault) }
-            note.installation?.addAll(getCommentsFromTaskByKeyword(task, commentSettingsChangesStart))
-            if (note.installation?.isEmpty()!!) { note.installation!!.add(commentSettingsChangesDefault) }
-            note.testing?.addAll(getCommentsFromTaskByKeyword(task, commentTestingPlanStart))
-            if (note.testing?.isEmpty()!!) { note.testing!!.add(commentTestingPlanDefault) }
-            note.rollback?.addAll(getCommentsFromTaskByKeyword(task, commentRollbackPlanStart))
-            if (note.rollback?.isEmpty()!!) { note.rollback!!.add(commentRollbackPlanDefault) }
-        }
-        if (note.distributions?.isEmpty()!!) {note.distributions = commentReleaseDistributionDefault}
-        return note
+        return getReleaseNoteFromTaskList(taskList)
     }
 
     override fun releaseNoteToString(jiraFixVersion: String, limit: Int): String {
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
-        val note = constructReleaseNote(taskList)
+        val note = getReleaseNoteFromTaskList(taskList)
         val sb = StringBuilder()
-        sb.append(commentReleaseDistributionParagraph + "\n" + note.distributions
-                + "\n\n" + commentNewFunctionsParagraph + mutableListToString(note.changes)
-                + "\n\n" + commentDatabaseChangesParagraph + mutableListToString(note.dbChanges)
-                + "\n\n" + commentConfigsParagraph + mutableListToString(note.configs)
-                + "\n\n" + commentSettingsChangesParagraph + mutableListToString(note.installation)
-                + "\n\n" + commentTestingPlanParagraph + mutableListToString(note.testing)
-                + "\n\n" + commentRollbackPlanParagraph + mutableListToString(note.rollback))
+        sb.append(
+            commentProperties.taskOutParagraph + "\n"
+                    + "\n\n" + commentProperties.taskInParagraph + "\n" + note.taskIn
+                    + "\n\n" + commentProperties.sourceCodeParagraph + "\n" + note.sourceCode
+                    + "\n\n" + commentProperties.artifactParagraph + "\n" + note.artifact
+                    + "\n\n" + commentProperties.newFeatureParagraph + mutableListToString(note.features)
+                    + "\n\n" + commentProperties.databaseChangeParagraph + mutableListToString(note.dbChanges)
+                    + "\n\n" + commentProperties.monitoringChangeParagraph + mutableListToString(note.monitoringChanges)
+                    + "\n\n" + commentProperties.configParagraph + mutableListToString(note.configs)
+                    + "\n\n" + commentProperties.deployInstructionParagraph + mutableListToString(note.deploy)
+                    + "\n\n" + commentProperties.testCaseParagraph + mutableListToString(note.testCase)
+                    + "\n\n" + commentProperties.rollbackActionParagraph + mutableListToString(note.rollback)
+        )
         return sb.toString()
+    }
+
+    private fun getReleaseNoteFromTaskList(taskList: MutableList<Task>): ReleaseNote {
+        val note = ReleaseNote()
+
+        for (task in taskList) {
+            if (task.summary.startsWith(commentProperties.taskInStart)) {
+                note.taskIn = task.key + "; " + task.summary + "; " + task.link
+            }
+            note.sourceCode = mutableListToString(getCommentsFromTaskByKeyword(task, commentProperties.sourceCodeStart))
+            if (note.sourceCode.isEmpty()) {
+                note.sourceCode = commentProperties.sourceCodeDefault
+            }
+            note.artifact = mutableListToString(getCommentsFromTaskByKeyword(task, commentProperties.artifactStart))
+            if (note.artifact.isEmpty()) {
+                note.artifact = commentProperties.artifactDefault
+            }
+            note.features?.add(task.key + "; " + task.summary + "; " + task.link)
+            if (note.features?.isEmpty()!!) {
+                note.features!!.add(commentProperties.newFeatureDefault)
+            }
+            note.dbChanges?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.databaseChangeStart))
+            if (note.dbChanges?.isEmpty()!!) {
+                note.dbChanges!!.add(commentProperties.databaseChangeDefault)
+            }
+            note.monitoringChanges?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.monitoringChangeStart))
+            if (note.monitoringChanges?.isEmpty()!!) {
+                note.monitoringChanges!!.add(commentProperties.monitoringChangeDefault)
+            }
+            note.configs?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.configStart))
+            if (note.configs?.isEmpty()!!) {
+                note.configs!!.add(commentProperties.configDefault)
+            }
+            note.deploy?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.deployInstructionStart))
+            if (note.deploy?.isEmpty()!!) {
+                note.deploy!!.add(commentProperties.deployInstructionDefault)
+            }
+            note.testCase?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.testCaseStart))
+            if (note.testCase?.isEmpty()!!) {
+                note.testCase!!.add(commentProperties.testCaseDefault)
+            }
+            note.rollback?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.rollbackActionStart))
+            if (note.rollback?.isEmpty()!!) {
+                note.rollback!!.add(commentProperties.rollbackActionDefault)
+            }
+        }
+        if (note.taskIn?.isEmpty()!!) {
+            note.taskIn = commentProperties.taskInParagraph
+        }
+        return note
     }
 
     private fun mutableListToString(list: MutableList<String>?): String {

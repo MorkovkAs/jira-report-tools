@@ -18,7 +18,7 @@ import ru.morkovka.report.interceptor.LogRequestInterceptor
 
 @Configuration
 @ComponentScan(basePackages = ["ru.morkovka.report"])
-class Configuration(
+class AppConfiguration(
     @Value("\${jira.auth.basic}")
     private val jiraAuthBasic: String
 ) : WebMvcConfigurer {
@@ -38,7 +38,7 @@ class Configuration(
     fun restTemplate(): RestTemplate {
         val restTemplate = RestTemplateBuilder().errorHandler(DefaultResponseErrorHandler()).build()
 
-        //Add a ClientHttpRequestInterceptor to the RestTemplate
+        //Adding a ClientHttpRequestInterceptor to the RestTemplate
         restTemplate.interceptors.add(ClientHttpRequestInterceptor { request, body, execution ->
             request.headers["Content-Type"] = MediaType.APPLICATION_JSON_VALUE
             //TODO check your auth data in application.yml file. It should be the result of ("Basic " + base64(login + ":" + password))

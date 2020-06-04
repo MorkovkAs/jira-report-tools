@@ -103,6 +103,12 @@
                         key: 'getReleaseNotes',
                         searchParam: 'Enter release',
                         url: '/api/release/getReleaseNote?jiraRelease='
+                    },
+                    {
+                        text: 'Get release notes as string',
+                        key: 'getReleaseNotesString',
+                        searchParam: 'Enter release',
+                        url: '/api/release/getReleaseNoteString?jiraRelease='
                     }
                 ],
                 response: null,

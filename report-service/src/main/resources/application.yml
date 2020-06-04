@@ -1,58 +1,67 @@
-jira:
-  url: "https://jira.unidata-platform.com"
-  auth:
-    basic: ${JIRA_AUTH_BASIC:Basic TW9ya292a0E6bXlTdXBlclBhc3M=}
-  search:
-    default:
-      project: "DM"
-      limit: 15
-      comment:
-        test:
-          case:
-            start: "Сценарий для тестирования на препроде"
-            paragraph: ""
-            default: ""
-        deploy:
-          instruction:
-            start: "Инструкция по установке"
-        release:
-          distribution:
-            start: "Дистрибутивы"
-            paragraph: "h3.Дистрибутивы"
-            default: "Релизов нет"
-        new:
-          functions:
-            start: "Новые функции и исправления"
-            paragraph: "h3.Новые функции и исправления"
-            default: "Новых функций не найдено"
-        dataBase:
-          changes:
-            start: "Настройка и изменения в структуре БД, атрибутах, справочниках:"
-            paragraph: "h3.Настройка и изменения в структуре БД, атрибутах, справочниках"
-            default: ""
-        configs:
-          start: "Конфигурация:"
-          paragraph: "h3.Конфигурация"
-          default: "Конфигурация в нынешней версии не изменена"
-        settings:
-          changes:
-            start: "Порядок установки и изменения настроек:"
-            paragraph: "h3.Порядок установки и изменения настроек"
-            default: "Порядок установка и изменения настроек не обнаружены"
-        testing:
-          plan:
-            start: "План тестирования:"
-            paragraph: "h3.План тестирования"
-            default: "Прогнать быстрые тесты"
-        rollback:
-          plan:
-            start: "План отката:"
-            paragraph: "h3.План отката"
-            default: "Откатить обновленные артефакты на предыдущие версии."
-
-
 auth:
   encoder:
     strength: ${ENCODER_STRENGTH:5}
   valid:
     token: ${TOKEN:0}
+
+jira:
+  url: "https://jira.unidata-platform.com"
+  auth:
+    basic: ${JIRA_AUTH_BASIC:Basic TW9ya292a0E6bXlTdXBlclBhc3M=}
+  paragraph:
+    font:
+      size: "h3."
+  search:
+    default:
+      project: "DM"
+      limit: 15
+      comment:
+        task:
+          out:
+            paragraph: "${jira.paragraph.font.size}Задача в Jira заказчика"
+          in:
+            start: "Релиз КСРД"
+            paragraph: "${jira.paragraph.font.size}Задача в Jira ТД"
+        source:
+          code:
+            start: "Исходные коды:"
+            paragraph: "${jira.paragraph.font.size}Исходные коды"
+            default: "*{color:#FF0000}Не заполнено.{color}*"
+        artifact:
+          start: "Артефакты:"
+          paragraph: "${jira.paragraph.font.size}Артефакты"
+          default: ${STORAGE_LINK:Ссылка }
+        new:
+          feature:
+            start: "Новые функции и исправления:"
+            paragraph: "${jira.paragraph.font.size}Новые функции и исправления"
+            default: "*{color:#FF0000}Не заполнено.{color}*"
+        database:
+          change:
+            start: "Настройки и изменения в структуре БД, атрибутах, справочниках:"
+            paragraph: "${jira.paragraph.font.size}Настройки и изменения в структуре БД, атрибутах, справочниках"
+            default: "Не применимо."
+        monitoring:
+          change:
+            start: "Информация для подключений и мониторинга:"
+            paragraph: "${jira.paragraph.font.size}Информация для подключений и мониторинга"
+            default: "Не применимо."
+        config:
+          start: "Конфигурация:"
+          paragraph: "${jira.paragraph.font.size}Конфигурация"
+          default: "Не применимо."
+        deploy:
+          instruction:
+            start: "Порядок установки и изменения настроек:"
+            paragraph: "${jira.paragraph.font.size}Порядок установки и изменения настроек"
+            default: "Не применимо."
+        test:
+          case:
+            start: "План тестирования у заказчика:"
+            paragraph: "${jira.paragraph.font.size}План тестирования"
+            default: ""
+        rollback:
+          action:
+            start: "План отката:"
+            paragraph: "${jira.paragraph.font.size}План отката"
+            default: "Откатить обновленные артефакты на предыдущие версии."
