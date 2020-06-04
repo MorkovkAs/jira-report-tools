@@ -81,41 +81,41 @@ class ReleaseServiceImpl : ReleaseService {
                 note.taskIn = task.key + "; " + task.summary + "; " + task.link
             }
             note.sourceCode = mutableListToString(getCommentsFromTaskByKeyword(task, commentProperties.sourceCodeStart))
-            if (note.sourceCode.isEmpty()) {
-                note.sourceCode = commentProperties.sourceCodeDefault
-            }
             note.artifact = mutableListToString(getCommentsFromTaskByKeyword(task, commentProperties.artifactStart))
-            if (note.artifact.isEmpty()) {
-                note.artifact = commentProperties.artifactDefault
-            }
             note.features?.add(task.key + "; " + task.summary + "; " + task.link)
-            if (note.features?.isEmpty()!!) {
-                note.features!!.add(commentProperties.newFeatureDefault)
-            }
             note.dbChanges?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.databaseChangeStart))
-            if (note.dbChanges?.isEmpty()!!) {
-                note.dbChanges!!.add(commentProperties.databaseChangeDefault)
-            }
             note.monitoringChanges?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.monitoringChangeStart))
-            if (note.monitoringChanges?.isEmpty()!!) {
-                note.monitoringChanges!!.add(commentProperties.monitoringChangeDefault)
-            }
             note.configs?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.configStart))
-            if (note.configs?.isEmpty()!!) {
-                note.configs!!.add(commentProperties.configDefault)
-            }
             note.deploy?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.deployInstructionStart))
-            if (note.deploy?.isEmpty()!!) {
-                note.deploy!!.add(commentProperties.deployInstructionDefault)
-            }
             note.testCase?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.testCaseStart))
-            if (note.testCase?.isEmpty()!!) {
-                note.testCase!!.add(commentProperties.testCaseDefault)
-            }
             note.rollback?.addAll(getCommentsFromTaskByKeyword(task, commentProperties.rollbackActionStart))
-            if (note.rollback?.isEmpty()!!) {
-                note.rollback!!.add(commentProperties.rollbackActionDefault)
-            }
+        }
+        if (note.sourceCode.isEmpty()) {
+            note.sourceCode = commentProperties.sourceCodeDefault
+        }
+        if (note.artifact.isEmpty()) {
+            note.artifact = commentProperties.artifactDefault
+        }
+        if (note.features?.isEmpty()!!) {
+            note.features!!.add(commentProperties.newFeatureDefault)
+        }
+        if (note.dbChanges?.isEmpty()!!) {
+            note.dbChanges!!.add(commentProperties.databaseChangeDefault)
+        }
+        if (note.monitoringChanges?.isEmpty()!!) {
+            note.monitoringChanges!!.add(commentProperties.monitoringChangeDefault)
+        }
+        if (note.configs?.isEmpty()!!) {
+            note.configs!!.add(commentProperties.configDefault)
+        }
+        if (note.deploy?.isEmpty()!!) {
+            note.deploy!!.add(commentProperties.deployInstructionDefault)
+        }
+        if (note.testCase?.isEmpty()!!) {
+            note.testCase!!.add(commentProperties.testCaseDefault)
+        }
+        if (note.rollback?.isEmpty()!!) {
+            note.rollback!!.add(commentProperties.rollbackActionDefault)
         }
         if (note.taskIn?.isEmpty()!!) {
             note.taskIn = commentProperties.taskInParagraph
