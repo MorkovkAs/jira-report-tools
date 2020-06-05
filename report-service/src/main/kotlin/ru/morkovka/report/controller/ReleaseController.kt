@@ -31,5 +31,5 @@ class ReleaseController(
     fun releaseNoteByJiraReleaseToString(
         @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
         @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
-    ): String = releaseService.releaseNoteToString(jiraRelease, limit)
+    ): String = releaseService.getReleaseNoteToString(jiraRelease, limit)
 }

@@ -61,9 +61,8 @@ class ReleaseServiceImpl (
         return getReleaseNoteFromTaskList(taskList)
     }
 
-    override fun releaseNoteToString(jiraFixVersion: String, limit: Int): String {
-        val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
-        val note = getReleaseNoteFromTaskList(taskList)
+    override fun getReleaseNoteToString(jiraFixVersion: String, limit: Int): String {
+        val note = getReleaseNoteByJiraRelease(jiraFixVersion, limit)
         val sb = StringBuilder()
 
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: convertation started")
@@ -86,7 +85,7 @@ class ReleaseServiceImpl (
         return sb.toString()
     }
 
-    fun getReleaseNoteFromTaskList(taskList: MutableList<Task>): ReleaseNote {
+    private fun getReleaseNoteFromTaskList(taskList: MutableList<Task>): ReleaseNote {
         val note = ReleaseNote()
 
         logger.info("getReleaseNoteFromTaskList [taskList = $taskList]: ReleaseNote creation started")
@@ -145,7 +144,9 @@ class ReleaseServiceImpl (
 
     companion object {
         fun enterCheck(comment: String): String {
-            return if(comment.startsWith("\n") || comment.startsWith("\n\n")) {
+            return if(comment.startsWith("\n")) {
+                ""
+            } else if (comment.startsWith("\n\n")) {
                 ""
             } else {
                 "\n"

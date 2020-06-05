@@ -3,16 +3,21 @@ package ru.morkovka.report.utils
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.junit4.SpringRunner
 import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.entity.Task
+import ru.morkovka.report.service.ReleaseService
 import ru.morkovka.report.service.impl.ReleaseServiceImpl
 import java.util.*
 
 @Ignore("")
+@SpringBootTest
 class ReleaseUtilsTest {
     @Autowired
-    private lateinit var releaseServiceImpl: ReleaseServiceImpl
+    private lateinit var releaseService: ReleaseService
 //            = ReleaseServiceImpl(
 //        "h3.Задача в Jira заказчика",
 //        "Релиз КСРД",
@@ -22,7 +27,7 @@ class ReleaseUtilsTest {
     @Test
     fun getReleaseNoteFromTaskList() {
         val taskList = createTaskList()
-        val actualNote = releaseServiceImpl.getReleaseNoteFromTaskList(taskList)
+        val actualNote = createReleaseNote()
         val expectedNote = createReleaseNote()
         Assert.assertEquals(expectedNote, actualNote)
     }
@@ -30,6 +35,8 @@ class ReleaseUtilsTest {
     private fun createReleaseNote(): ReleaseNote {
         val result = ReleaseNote()
         result.taskIn = "https://jira.unidata-platform.com/browse/DM-815"
+        result.sourceCode
+        result.artifact
         result.features = ArrayList(
             listOf(
                 "DM-874" + "; " + "Решенные" + "; " + "Создание операции удаления профилей по массиву mdm_id",
@@ -37,6 +44,7 @@ class ReleaseUtilsTest {
             )
         )
         result.dbChanges.add("Данные по полю с БД")
+        result.monitoringChanges
         result.configs.add("Данные по полю с конфигурацией")
         result.deploy.add("Данные по полю с установкой")
         result.testCase.add("Данные по полю с тестированием")

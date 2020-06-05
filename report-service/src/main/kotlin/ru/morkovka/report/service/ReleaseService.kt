@@ -8,5 +8,5 @@ interface ReleaseService {
 
     fun getReleaseNoteByJiraRelease(jiraFixVersion: String, limit: Int): ReleaseNote
 
-    fun releaseNoteToString(jiraFixVersion: String, limit: Int): String
+    fun getReleaseNoteToString(jiraFixVersion: String, limit: Int): String
 }
