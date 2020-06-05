@@ -8,7 +8,7 @@ data class ReleaseNote (
      */
     var taskIn: String = String(),
 
-    var sourceCode: String = String(),
+    var sourceCode: MutableList<String> = ArrayList(),
 
     var artifact: String = String(),
 

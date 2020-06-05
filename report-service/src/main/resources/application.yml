@@ -11,6 +11,9 @@ jira:
   paragraph:
     font:
       size: "h3."
+  start:
+    font:
+      size: "h2."
   search:
     default:
       project: "DM"
@@ -23,38 +26,38 @@ jira:
           paragraph: "${jira.paragraph.font.size}Задача в Jira ТД"
       comment:
         source-code:
-          start: "Исходные коды:"
+          start: "${jira.start.font.size}Исходные коды:"
           paragraph: "${jira.paragraph.font.size}Исходные коды"
           default: "*{color:#FF0000}Не заполнено.{color}*"
         artifact:
-          start: "Артефакты:"
+          start: "${jira.start.font.size}Артефакты:"
           paragraph: "${jira.paragraph.font.size}Артефакты"
           default: ${STORAGE_LINK:Ссылка }
         new-feature:
-          start: "Новые функции и исправления:"
+          start: "${jira.start.font.size}Новые функции и исправления:"
           paragraph: "${jira.paragraph.font.size}Новые функции и исправления"
           default: "*{color:#FF0000}Не заполнено.{color}*"
         database-change:
-          start: "Настройки и изменения в структуре БД, атрибутах, справочниках:"
+          start: "${jira.start.font.size}Настройки и изменения в структуре БД, атрибутах, справочниках:"
           paragraph: "${jira.paragraph.font.size}Настройки и изменения в структуре БД, атрибутах, справочниках"
           default: "Не применимо."
         monitoring-change:
-          start: "Информация для подключений и мониторинга:"
+          start: "${jira.start.font.size}Информация для подключений и мониторинга:"
           paragraph: "${jira.paragraph.font.size}Информация для подключений и мониторинга"
           default: "Не применимо."
         config:
-          start: "Конфигурация:"
+          start: "${jira.start.font.size}Конфигурация:"
           paragraph: "${jira.paragraph.font.size}Конфигурация"
           default: "Не применимо."
         deploy-instruction:
-          start: "Порядок установки и изменения настроек:"
+          start: "${jira.start.font.size}Порядок установки и изменения настроек:"
           paragraph: "${jira.paragraph.font.size}Порядок установки и изменения настроек"
           default: "Не применимо."
         test-case:
-          start: "План тестирования у заказчика:"
+          start: "${jira.start.font.size}План тестирования у заказчика:"
           paragraph: "${jira.paragraph.font.size}План тестирования"
-          default: ""
+          default: "Прогнать быстрые тесты"
         rollback-action:
-          start: "План отката:"
+          start: "${jira.start.font.size}План отката:"
           paragraph: "${jira.paragraph.font.size}План отката"
           default: "Откатить обновленные артефакты на предыдущие версии."

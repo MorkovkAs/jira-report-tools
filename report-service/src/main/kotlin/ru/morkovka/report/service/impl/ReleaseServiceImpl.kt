@@ -71,15 +71,15 @@ class ReleaseServiceImpl (
         sb.append(
             taskOutParagraph + "\n"
                     + "\n\n" + taskInParagraph + "\n" + note.taskIn
-                    + "\n\n" + commentProperties.sourceCode.paragraph + "\n" + note.sourceCode
-                    + "\n\n" + commentProperties.artifact.paragraph + "\n" + note.artifact
-                    + "\n\n" + commentProperties.newFeature.paragraph + "\n" + note.features.joinToString("\n")
-                    + "\n\n" + commentProperties.databaseChange.paragraph + "\n" + note.dbChanges.joinToString("\n")
-                    + "\n\n" + commentProperties.monitoringChange.paragraph + "\n" + note.monitoringChanges.joinToString("\n")
-                    + "\n\n" + commentProperties.config.paragraph + "\n" + note.configs.joinToString("\n")
-                    + "\n\n" + commentProperties.deployInstruction.paragraph + "\n" + note.deploy.joinToString("\n")
-                    + "\n\n" + commentProperties.testCase.paragraph + "\n" + note.testCase.joinToString("\n")
-                    + "\n\n" + commentProperties.rollbackAction.paragraph + "\n" + note.rollback.joinToString("\n")
+                    + "\n\n" + commentProperties.sourceCode.paragraph + enterCheck(note.sourceCode.first()) + note.sourceCode.joinToString(" ")
+                    + "\n\n" + commentProperties.artifact.paragraph + enterCheck(note.artifact) + note.artifact
+                    + "\n\n" + commentProperties.newFeature.paragraph + enterCheck(note.features.first()) + note.features.joinToString(" ")
+                    + "\n\n" + commentProperties.databaseChange.paragraph + enterCheck(note.dbChanges.first()) + note.dbChanges.joinToString(" ")
+                    + "\n\n" + commentProperties.monitoringChange.paragraph + enterCheck(note.monitoringChanges.first()) + note.monitoringChanges.joinToString(" ")
+                    + "\n\n" + commentProperties.config.paragraph + enterCheck(note.configs.first()) + note.configs.joinToString(" ")
+                    + "\n\n" + commentProperties.deployInstruction.paragraph + enterCheck(note.deploy.first()) + note.deploy.joinToString(" ")
+                    + "\n\n" + commentProperties.testCase.paragraph + enterCheck(note.testCase.first()) + note.testCase.joinToString(" ")
+                    + "\n\n" + commentProperties.rollbackAction.paragraph + enterCheck(note.rollback.first()) + note.rollback.joinToString(" ")
         )
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: ReleaseNote to String convertation completed")
 
@@ -95,8 +95,8 @@ class ReleaseServiceImpl (
             if (task.summary.startsWith(taskInStart)) {
                 note.taskIn = task.key + "; " + task.summary + "; " + task.link
             }
-            note.sourceCode = getCommentsFromTaskByKeyword(task, commentProperties.sourceCode.start).joinToString("\n")
-            note.artifact = getCommentsFromTaskByKeyword(task, commentProperties.artifact.start).joinToString("\n")
+            note.sourceCode.addAll(getCommentsFromTaskByKeyword(task, commentProperties.sourceCode.start))
+            note.artifact = getCommentsFromTaskByKeyword(task, commentProperties.artifact.start).joinToString(" ")
             if(!task.summary.contains(taskInStart)){
                 note.features.add("\n" + task.key + "; " + task.summary + "; " + task.link)
             }
@@ -108,7 +108,7 @@ class ReleaseServiceImpl (
             note.rollback.addAll(getCommentsFromTaskByKeyword(task, commentProperties.rollbackAction.start))
         }
         if (note.sourceCode.isEmpty()) {
-            note.sourceCode = commentProperties.sourceCode.default
+            note.sourceCode.add(commentProperties.sourceCode.default)
         }
         if (note.artifact.isEmpty()) {
             note.artifact = commentProperties.artifact.default
@@ -144,6 +144,14 @@ class ReleaseServiceImpl (
     }
 
     companion object {
+        fun enterCheck(comment: String): String {
+            return if(comment.startsWith("\n") || comment.startsWith("\n\n")) {
+                ""
+            } else {
+                "\n"
+            }
+        }
+
         fun getCommentsFromTaskListByKeyword(
             taskList: MutableList<Task>,
             keyword: String
@@ -157,7 +165,7 @@ class ReleaseServiceImpl (
         }
 
         fun getCommentsFromTaskByKeyword(task: Task, keyword: String) =
-            task.comments.filter { it.startsWith(keyword) }.map { it.replace(keyword, "") }.toMutableList()
+            task.comments.filter { it.startsWith(keyword) }.map { it.replaceFirst(keyword, "") }.toMutableList()
 
         /**
          * Merges two maps. If there are duplicated keys in maps, it merges the corresponded lists
