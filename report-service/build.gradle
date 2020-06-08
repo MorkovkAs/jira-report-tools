@@ -28,6 +28,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" // Required for Kotlin integration
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.security:spring-security-core"
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
