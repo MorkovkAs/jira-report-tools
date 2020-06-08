@@ -74,7 +74,7 @@ class ReleaseServiceImpl(
 
         var taskIn = ""
         if (note.taskInKey.isNotEmpty()) {
-            taskIn = "{Jira:${note.taskInKey}"
+            taskIn = "{Jira:${note.taskInKey}}"
         }
         val s = "$taskOutParagraph\n" +
                 "\n\n${taskInParagraph}\n$taskIn" +
@@ -184,13 +184,13 @@ class ReleaseServiceImpl(
             return defaultValue
         }
 
-        var s = "||Задача в jira||Задача в jira ТаскДата||Наименование задачи в jira ТаскДата||\n";
+        var s = "||Задача в jira||Задача в jira ТаскДата||Наименование задачи в jira ТаскДата||";
         map.forEach { (key, task) ->
             var taskOutKey = keyMap.getOrDefault(key, " ")
             if (taskOutKey != " ") {
-                taskOutKey = "{Jira: $taskOutKey)}"
+                taskOutKey = "{Jira: $taskOutKey}"
             }
-            s += "|$taskOutKey|{Jira: $key}|${task.summary}|\n"
+            s += "\n|$taskOutKey|{Jira: $key}|${task.summary}|"
         }
         return s
     }
