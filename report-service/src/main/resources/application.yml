@@ -28,11 +28,11 @@ jira:
         source-code:
           start: "${jira.start.font.size}Исходные коды:"
           paragraph: "${jira.paragraph.font.size}Исходные коды"
-          default: "*{color:#FF0000}Не заполнено.{color}*"
+          default: ${SOURCE_CODE:*{color:#FF0000}Не заполнено.{color}*}
         artifact:
           start: "${jira.start.font.size}Артефакты:"
           paragraph: "${jira.paragraph.font.size}Артефакты"
-          default: ${STORAGE_LINK:Ссылка }
+          default: ${STORAGE_LINK:*{color:#FF0000}Не заполнено.{color}*}
         new-feature:
           start: "${jira.start.font.size}Новые функции и исправления:"
           paragraph: "${jira.paragraph.font.size}Новые функции и исправления"
