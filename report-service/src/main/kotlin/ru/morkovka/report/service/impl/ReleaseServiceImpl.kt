@@ -72,8 +72,12 @@ class ReleaseServiceImpl(
 
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: convertation started")
 
+        var taskIn = ""
+        if (note.taskInKey.isNotEmpty()) {
+            taskIn = "{Jira:${note.taskInKey}"
+        }
         val s = "$taskOutParagraph\n" +
-                "\n\n${taskInParagraph}\n{Jira:${note.taskInKey}}" +
+                "\n\n${taskInParagraph}\n$taskIn" +
                 "\n\n${commentProperties.sourceCode.paragraph}\n${stringFromMapWithoutTaskKeys(
                     note.sourceCode, commentProperties.sourceCode.default
                 )}" +
@@ -115,11 +119,11 @@ class ReleaseServiceImpl(
             .filter { !it.summary.startsWith((taskInStart)) }
             .forEach {
                 // Fill collection for mapping jira tasks
-                val regex = "(\\[ссылка\\|https*://jcs\\.passport\\.local/(browse|projects/MDM/issues)/MDM-[0-9]+] на задачу в джире ДИТа)"
-                    .toRegex()
-                val taskOutKey = regex.find(it.summary)
+                val regex = ("(\\[ссылка\\|https*://jcs\\.passport\\.local/(browse|projects/MDM/issues)/MDM-[0-9]+]" +
+                        " на задачу в джире ДИТа)").toRegex(RegexOption.IGNORE_CASE)
+                val taskOutKey = regex.find(it.description)
                 if (taskOutKey != null) {
-                    jiraKeys[it.key] = "MDM-[0-9]+".toRegex().find(taskOutKey.value)?.value ?: ""
+                    jiraKeys[it.key] = "MDM-[0-9]+".toRegex(RegexOption.IGNORE_CASE).find(taskOutKey.value)?.value ?: ""
                 }
 
                 // Fill release features
