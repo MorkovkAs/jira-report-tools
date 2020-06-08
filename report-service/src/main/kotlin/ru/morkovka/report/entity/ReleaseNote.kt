@@ -1,46 +1,59 @@
 package ru.morkovka.report.entity
 
-import kotlin.collections.ArrayList
-
-data class ReleaseNote (
+data class ReleaseNote(
     /**
      * Задача в нашей джире
      */
-    var taskIn: String = String(),
+    var taskInKey: String,
 
-    var sourceCode: MutableList<String> = ArrayList(),
+    /**
+     * Map to store corresponded Jira keys of issues.
+     * The key in map is a key from our Jira, the value in map is a key of task in customer's Jira
+     */
+    var jiraKeysMap: MutableMap<String, String>,
 
-    var artifact: String = String(),
+    /**
+     * Исходные коды
+     */
+    var sourceCode: MutableMap<String, MutableList<String>>,
+
+    /**
+     * Артефакты
+     */
+    var artifact: MutableMap<String, MutableList<String>>,
 
     /**
      * Новые функции и исправления
      */
-    var features: MutableList<String> = ArrayList(),
+    var features: MutableMap<String, TaskFeature>,
 
     /**
      * Настройки и изменения в структуре БД
      */
-    var dbChanges: MutableList<String> = ArrayList(),
+    var dbChanges: MutableMap<String, MutableList<String>>,
 
-    var monitoringChanges: MutableList<String> = ArrayList(),
+    /**
+     * Информация для подключений и мониторинга
+     */
+    var monitoringChanges: MutableMap<String, MutableList<String>>,
 
     /**
      * Конфигурация
      */
-    var configs: MutableList<String> = ArrayList(),
+    var configs: MutableMap<String, MutableList<String>>,
 
     /**
      * Порядок установки и изменения настроек
      */
-    var deploy: MutableList<String> = ArrayList(),
+    var deploy: MutableMap<String, MutableList<String>>,
 
     /**
      * План тестирования
      */
-    var testCase: MutableList<String> = ArrayList(),
+    var testCase: MutableMap<String, MutableList<String>>,
 
     /**
      * План отката
      */
-    var rollback: MutableList<String> = ArrayList()
+    var rollback: MutableMap<String, MutableList<String>>
 )

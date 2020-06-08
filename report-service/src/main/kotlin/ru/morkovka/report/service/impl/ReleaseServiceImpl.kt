@@ -8,16 +8,20 @@ import org.springframework.stereotype.Service
 import ru.morkovka.report.CommentProperties
 import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.entity.Task
+import ru.morkovka.report.entity.TaskFeature
 import ru.morkovka.report.service.ReleaseService
 import ru.morkovka.report.utils.TaskUtils.Companion.sortByJiraKey
 import java.util.*
+import java.util.stream.Collectors
 
 @Service
-class ReleaseServiceImpl (
+class ReleaseServiceImpl(
     @Value("\${jira.search.default.task.out.paragraph}")
     val taskOutParagraph: String,
+
     @Value("\${jira.search.default.task.in.start}")
     val taskInStart: String,
+
     @Value("\${jira.search.default.task.in.paragraph}")
     val taskInParagraph: String
 ) : ReleaseService {
@@ -27,6 +31,8 @@ class ReleaseServiceImpl (
 
     @Autowired
     private lateinit var taskServiceImpl: TaskServiceImpl
+
+    private val default = "DEFAULT"
 
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -63,110 +69,148 @@ class ReleaseServiceImpl (
 
     override fun getReleaseNoteToString(jiraFixVersion: String, limit: Int): String {
         val note = getReleaseNoteByJiraRelease(jiraFixVersion, limit)
-        val sb = StringBuilder()
 
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: convertation started")
 
-        sb.append(
-            taskOutParagraph + "\n"
-                    + "\n\n" + taskInParagraph + "\n" + note.taskIn
-                    + "\n\n" + commentProperties.sourceCode.paragraph + enterCheck(note.sourceCode.first()) + note.sourceCode.joinToString(" ")
-                    + "\n\n" + commentProperties.artifact.paragraph + enterCheck(note.artifact) + note.artifact
-                    + "\n\n" + commentProperties.newFeature.paragraph + enterCheck(note.features.first()) + note.features.joinToString(" ")
-                    + "\n\n" + commentProperties.databaseChange.paragraph + enterCheck(note.dbChanges.first()) + note.dbChanges.joinToString(" ")
-                    + "\n\n" + commentProperties.monitoringChange.paragraph + enterCheck(note.monitoringChanges.first()) + note.monitoringChanges.joinToString(" ")
-                    + "\n\n" + commentProperties.config.paragraph + enterCheck(note.configs.first()) + note.configs.joinToString(" ")
-                    + "\n\n" + commentProperties.deployInstruction.paragraph + enterCheck(note.deploy.first()) + note.deploy.joinToString(" ")
-                    + "\n\n" + commentProperties.testCase.paragraph + enterCheck(note.testCase.first()) + note.testCase.joinToString(" ")
-                    + "\n\n" + commentProperties.rollbackAction.paragraph + enterCheck(note.rollback.first()) + note.rollback.joinToString(" ")
-        )
+        val s = "$taskOutParagraph\n" +
+                "\n\n${taskInParagraph}\n{Jira:${note.taskInKey}}" +
+                "\n\n${commentProperties.sourceCode.paragraph}\n${stringFromMapWithoutTaskKeys(
+                    note.sourceCode, commentProperties.sourceCode.default
+                )}" +
+                "\n\n${commentProperties.artifact.paragraph}\n${stringFromMapWithoutTaskKeys(
+                    note.artifact, commentProperties.artifact.default
+                )}" +
+                "\n\n${commentProperties.newFeature.paragraph}\n${stringFromFeatures(
+                    note.features, note.jiraKeysMap, commentProperties.newFeature.default
+                )}" +
+                "\n\n${commentProperties.databaseChange.paragraph}\n${stringFromMapWithoutTaskKeys(
+                    note.dbChanges, commentProperties.databaseChange.default
+                )}" +
+                "\n\n${commentProperties.monitoringChange.paragraph}\n${stringFromMapWithoutTaskKeys(
+                    note.monitoringChanges, commentProperties.monitoringChange.default
+                )}" +
+                "\n\n${commentProperties.config.paragraph}\n${stringFromMapWithoutTaskKeys(
+                    note.configs, commentProperties.config.default
+                )}" +
+                "\n\n${commentProperties.deployInstruction.paragraph}\n${stringFromMapWithoutTaskKeys(
+                    note.deploy, commentProperties.deployInstruction.default
+                )}" +
+                "\n\n${commentProperties.testCase.paragraph}\n${stringFromMapWithTaskKeys(
+                    note.testCase, true, commentProperties.testCase.default
+                )}" +
+                "\n\n${commentProperties.rollbackAction.paragraph}\n${stringFromMapWithoutTaskKeys(
+                    note.rollback, commentProperties.rollbackAction.default
+                )}"
+
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: ReleaseNote to String convertation completed")
 
-        return sb.toString()
+        return s
     }
 
     private fun getReleaseNoteFromTaskList(taskList: MutableList<Task>): ReleaseNote {
-        val note = ReleaseNote()
+        val taskIn = taskList.filter { it.summary.startsWith(taskInStart) }.getOrNull(0)
+        val jiraKeys: MutableMap<String, String> = mutableMapOf()
+        val features: MutableMap<String, TaskFeature> = mutableMapOf()
+        taskList
+            .filter { !it.summary.startsWith((taskInStart)) }
+            .forEach {
+                // Fill collection for mapping jira tasks
+                val regex = "(\\[ссылка\\|https*://jcs\\.passport\\.local/(browse|projects/MDM/issues)/MDM-[0-9]+] на задачу в джире ДИТа)"
+                    .toRegex()
+                val taskOutKey = regex.find(it.summary)
+                if (taskOutKey != null) {
+                    jiraKeys[it.key] = "MDM-[0-9]+".toRegex().find(taskOutKey.value)?.value ?: ""
+                }
 
-        logger.info("getReleaseNoteFromTaskList [taskList = $taskList]: ReleaseNote creation started")
+                // Fill release features
+                features[it.key] = TaskFeature(
+                    key = it.key,
+                    link = it.link,
+                    summary = it.summary
+                )
+            }
 
-        for (task in taskList) {
-            if (task.summary.startsWith(taskInStart)) {
-                note.taskIn = task.key + "; " + task.summary + "; " + task.link
-            }
-            note.sourceCode.addAll(getCommentsFromTaskByKeyword(task, commentProperties.sourceCode.start))
-            note.artifact = getCommentsFromTaskByKeyword(task, commentProperties.artifact.start).joinToString(" ")
-            if(!task.summary.contains(taskInStart)){
-                note.features.add("\n" + task.key + "; " + task.summary + "; " + task.link)
-            }
-            note.dbChanges.addAll(getCommentsFromTaskByKeyword(task, commentProperties.databaseChange.start))
-            note.monitoringChanges.addAll(getCommentsFromTaskByKeyword(task, commentProperties.monitoringChange.start))
-            note.configs.addAll(getCommentsFromTaskByKeyword(task, commentProperties.config.start))
-            note.deploy.addAll(getCommentsFromTaskByKeyword(task, commentProperties.deployInstruction.start))
-            note.testCase.addAll(getCommentsFromTaskByKeyword(task, commentProperties.testCase.start))
-            note.rollback.addAll(getCommentsFromTaskByKeyword(task, commentProperties.rollbackAction.start))
-        }
-        if (note.sourceCode.isEmpty()) {
-            note.sourceCode.add(commentProperties.sourceCode.default)
-        }
-        if (note.artifact.isEmpty()) {
-            note.artifact = commentProperties.artifact.default
-        }
-        if (note.features.isEmpty()) {
-            note.features.add(commentProperties.newFeature.default)
-        }
-        if (note.dbChanges.isEmpty()) {
-            note.dbChanges.add(commentProperties.databaseChange.default)
-        }
-        if (note.monitoringChanges.isEmpty()) {
-            note.monitoringChanges.add(commentProperties.monitoringChange.default)
-        }
-        if (note.configs.isEmpty()) {
-            note.configs.add(commentProperties.config.default)
-        }
-        if (note.deploy.isEmpty()) {
-            note.deploy.add(commentProperties.deployInstruction.default)
-        }
-        if (note.testCase.isEmpty()) {
-            note.testCase.add(commentProperties.testCase.default)
-        }
-        if (note.rollback.isEmpty()) {
-            note.rollback.add(commentProperties.rollbackAction.default)
-        }
-        if (note.taskIn.isEmpty()) {
-            note.taskIn = taskInParagraph
-        }
+        val note = ReleaseNote(
+            taskInKey = taskIn?.key ?: "",
+            jiraKeysMap = jiraKeys,
+            sourceCode = getCommentsFromTaskListByKeyword(taskList, commentProperties.sourceCode.start),
+            artifact = getCommentsFromTaskListByKeyword(taskList, commentProperties.artifact.start),
+            features = features,
+            dbChanges = getCommentsFromTaskListByKeyword(taskList, commentProperties.databaseChange.start),
+            monitoringChanges = getCommentsFromTaskListByKeyword(taskList, commentProperties.monitoringChange.start),
+            configs = getCommentsFromTaskListByKeyword(taskList, commentProperties.config.start),
+            deploy = getCommentsFromTaskListByKeyword(taskList, commentProperties.deployInstruction.start),
+            testCase = getCommentsFromTaskListByKeyword(taskList, commentProperties.testCase.start),
+            rollback = getCommentsFromTaskListByKeyword(taskList, commentProperties.rollbackAction.start)
+        )
 
         logger.info("getReleaseNoteFromTaskList [taskList = $taskList]: ReleaseNote creation completed")
 
         return note
     }
 
-    companion object {
-        fun enterCheck(comment: String): String {
-            return if(comment.startsWith("\n")) {
-                ""
-            } else if (comment.startsWith("\n\n")) {
-                ""
-            } else {
-                "\n"
-            }
+    private fun stringFromMapWithTaskKeys(
+        map: MutableMap<String, MutableList<String>>,
+        collapse: Boolean = false,
+        defaultValue: String
+    ): String {
+        if (map.isEmpty()) {
+            return defaultValue
         }
 
+        var s = "";
+        map.forEach { (key, comments) ->
+            if (collapse) s += "{expand:$key}\n"
+            s += comments.joinToString("\n")
+            if (collapse) s += "{expand}\n"
+        }
+        return s
+    }
+
+    private fun stringFromMapWithoutTaskKeys(map: MutableMap<String, MutableList<String>>, defaultValue: String): String {
+        return if (map.isNotEmpty()) {
+            map.values.stream().map { it.joinToString("\n") }.collect(Collectors.toList()).joinToString("\n")
+        } else {
+            defaultValue
+        }
+    }
+
+    private fun stringFromFeatures(map: MutableMap<String, TaskFeature>, keyMap: MutableMap<String, String>, defaultValue: String): String {
+        if (map.isEmpty()) {
+            return defaultValue
+        }
+
+        var s = "||Задача в jira||Задача в jira ТаскДата||Наименование задачи в jira ТаскДата||\n";
+        map.forEach { (key, task) ->
+            var taskOutKey = keyMap.getOrDefault(key, " ")
+            if (taskOutKey != " ") {
+                taskOutKey = "{Jira: $taskOutKey)}"
+            }
+            s += "|$taskOutKey|{Jira: $key}|${task.summary}|\n"
+        }
+        return s
+    }
+
+    companion object {
         fun getCommentsFromTaskListByKeyword(
             taskList: MutableList<Task>,
             keyword: String
         ): MutableMap<String, MutableList<String>> {
             val comments: MutableMap<String, MutableList<String>> = LinkedHashMap()
             taskList.stream().forEach { task ->
-                comments[task.key] = getCommentsFromTaskByKeyword(task, keyword)
+                val taskComments = getCommentsFromTaskByKeyword(task, keyword)
+                if (taskComments.isNotEmpty()) {
+                    comments[task.key] = taskComments
+                }
             }
 
             return comments
         }
 
-        fun getCommentsFromTaskByKeyword(task: Task, keyword: String) =
-            task.comments.filter { it.startsWith(keyword) }.map { it.replaceFirst(keyword, "") }.toMutableList()
+        private fun getCommentsFromTaskByKeyword(task: Task, keyword: String) =
+            task.comments.filter { it.startsWith(keyword) }.map {
+                it.replaceFirst(keyword, "").replaceFirst("\r\n", "").replaceFirst("\n", "")
+            }.toMutableList()
 
         /**
          * Merges two maps. If there are duplicated keys in maps, it merges the corresponded lists

@@ -3,14 +3,11 @@ package ru.morkovka.report.utils
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit4.SpringRunner
 import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.entity.Task
 import ru.morkovka.report.service.ReleaseService
-import ru.morkovka.report.service.impl.ReleaseServiceImpl
 import java.util.*
 
 @Ignore("")
@@ -24,7 +21,7 @@ class ReleaseUtilsTest {
 //        "h3.Задача в Jira ТД"
 //    )
 
-    @Test
+    /*@Test
     fun getReleaseNoteFromTaskList() {
         val taskList = createTaskList()
         val actualNote = createReleaseNote()
@@ -34,7 +31,7 @@ class ReleaseUtilsTest {
 
     private fun createReleaseNote(): ReleaseNote {
         val result = ReleaseNote()
-        result.taskIn = "https://jira.unidata-platform.com/browse/DM-815"
+        result.taskInKey = "https://jira.unidata-platform.com/browse/DM-815"
         result.sourceCode
         result.artifact
         result.features = ArrayList(
@@ -108,5 +105,5 @@ class ReleaseUtilsTest {
         result.add(task2)
         result.add(task3)
         return result
-    }
+    }*/
 }

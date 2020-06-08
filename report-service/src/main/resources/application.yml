@@ -7,7 +7,7 @@ auth:
 jira:
   url: "https://jira.unidata-platform.com"
   auth:
-    basic: ${JIRA_AUTH_BASIC:Basic ZGVuaXMuZ2x1c2hrb3Y6RDUyMjU5OHo=} #ZGVuaXMuZ2x1c2hrb3Y6RDUyMjU5OHo TW9ya292a0E6bXlTdXBlclBhc3M
+    basic: ${JIRA_AUTH_BASIC:Basic TW9ya292a0E6bXlTdXBlclBhc3M}
   paragraph:
     font:
       size: "h3."
