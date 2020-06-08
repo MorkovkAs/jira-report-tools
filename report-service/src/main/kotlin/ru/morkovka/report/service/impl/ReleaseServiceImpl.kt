@@ -188,9 +188,9 @@ class ReleaseServiceImpl(
         map.forEach { (key, task) ->
             var taskOutKey = keyMap.getOrDefault(key, " ")
             if (taskOutKey != " ") {
-                taskOutKey = "{Jira: $taskOutKey}"
+                taskOutKey = "{Jira:$taskOutKey}"
             }
-            s += "\n|$taskOutKey|{Jira: $key}|${task.summary}|"
+            s += "\n|$taskOutKey|{Jira:$key}|${task.summary}|"
         }
         return s
     }

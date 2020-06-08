@@ -56,7 +56,7 @@ jira:
         test-case:
           start: "${jira.start.font.size}План тестирования у заказчика:"
           paragraph: "${jira.paragraph.font.size}План тестирования"
-          default: "*{color:#FF0000}Не заполнено.{color}*"
+          default: "Выполнить соответствующие базовые сценарии для проверки функционала после деплоймента"
         rollback-action:
           start: "${jira.start.font.size}План отката:"
           paragraph: "${jira.paragraph.font.size}План отката"
