@@ -62,10 +62,29 @@ class ReleaseServiceImpl(
         return sortByJiraKey(commentsMap)
     }
 
+    /**
+     * Search for every task suites for fix version by {@code TaskServiceImpl#getTasksByJiraRelease}.
+     * Then all relevant tasks are transformed into custom ReleaseNote class.
+     *
+     * @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
+     * @param limit on the number of returned issues from Jira
+     * @return the custom class ReleaseNote, which fields contains all necessary information to form release report
+     */
+
     override fun getReleaseNoteByJiraRelease(jiraFixVersion: String, limit: Int): ReleaseNote {
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
         return getReleaseNoteFromTaskList(taskList)
     }
+
+    /**
+     * Search for every task suites for fix version by {@code TaskServiceImpl#getTasksByJiraRelease}.
+     * Then all relevant tasks are transformed into custom ReleaseNote class.
+     * And finally construct String contains readable release report with markdown tags.
+     *
+     * @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
+     * @param limit on the number of returned issues from Jira
+     * @return the String contains
+     */
 
     override fun getReleaseNoteToString(jiraFixVersion: String, limit: Int): String {
         val note = getReleaseNoteByJiraRelease(jiraFixVersion, limit)
@@ -111,6 +130,14 @@ class ReleaseServiceImpl(
         return s
     }
 
+    /**
+     * Go over Task list and select suitable info for ReleaseNote class.
+     * Then fill ReleaseNote fields with selected info.
+     *
+     * @param taskList array with custom class Task contains info from Jira tasks.
+     * @return custom ReleaseNote class contains fields with information for release report.
+     */
+
     private fun getReleaseNoteFromTaskList(taskList: MutableList<Task>): ReleaseNote {
         val taskIn = taskList.filter { it.summary.startsWith(taskInStart) }.getOrNull(0)
         val jiraKeys: MutableMap<String, String> = mutableMapOf()
@@ -153,6 +180,15 @@ class ReleaseServiceImpl(
         return note
     }
 
+    /**
+     * Go through map<String, MutableList<String>> and concatenates suitable info to solid String using task keys.
+     *
+     * @param map contains info from one field of ReleaseNote
+     * @param collapse Boolean
+     * @param defaultValue String with default value returning when map is empty.
+     * @return String consists of info from map.
+     */
+
     private fun stringFromMapWithTaskKeys(
         map: MutableMap<String, MutableList<String>>,
         collapse: Boolean = false,
@@ -171,6 +207,14 @@ class ReleaseServiceImpl(
         return s
     }
 
+    /**
+     * Go through map<String, MutableList<String>> and concatenates suitable info to solid String without using task keys.
+     *
+     * @param map contains info from one field of ReleaseNote
+     * @param defaultValue String with default value returning when map is empty.
+     * @return String consists of info from map.
+     */
+
     private fun stringFromMapWithoutTaskKeys(map: MutableMap<String, MutableList<String>>, defaultValue: String): String {
         return if (map.isNotEmpty()) {
             map.values.stream().map { it.joinToString("\n") }.collect(Collectors.toList()).joinToString("\n")
@@ -178,6 +222,15 @@ class ReleaseServiceImpl(
             defaultValue
         }
     }
+
+    /**
+     * Construct String of features from Map of features.
+     *
+     * @param map fields contains String and TaskFeature class.
+     * @param keyMap contains map of keys.
+     * @param defaultValue String with default value returning when map is empty.
+     * @return String consisted of features' info.
+     */
 
     private fun stringFromFeatures(map: MutableMap<String, TaskFeature>, keyMap: MutableMap<String, String>, defaultValue: String): String {
         if (map.isEmpty()) {
@@ -196,6 +249,15 @@ class ReleaseServiceImpl(
     }
 
     companion object {
+
+        /**
+         * Getting comments that suits keyword search from list of tasks.
+         *
+         * @param taskList List of custom class Task instances
+         * @param keyword String contains keyword by which comments are got
+         * @return MutableMap<String, MutableList<String>> contains comments as String and comments as List
+         */
+
         fun getCommentsFromTaskListByKeyword(
             taskList: MutableList<Task>,
             keyword: String
@@ -210,6 +272,14 @@ class ReleaseServiceImpl(
 
             return comments
         }
+
+        /**
+         * Search through task.comments for suitable one which starts from specified keyword.
+         * Then replace keyword with header for release report.
+         *
+         * @param task instance of custom Task class contains info from Jira task.
+         * @return MutableList<String> contains comments which match fields for ReleaseNote
+         */
 
         private fun getCommentsFromTaskByKeyword(task: Task, keyword: String) =
             task.comments.filter { it.startsWith(keyword) }.map {
