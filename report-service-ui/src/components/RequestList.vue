@@ -93,10 +93,22 @@
                         url: '/api/task/byRelease?jiraRelease='
                     },
                     {
+                        text: 'Get release info',
+                        key: 'getReleaseInfo',
+                        searchParam: 'Enter release',
+                        url: '/api/release/infoByRelease?jiraRelease='
+                    },
+                    {
                         text: 'Get release notes',
                         key: 'getReleaseNotes',
                         searchParam: 'Enter release',
-                        url: '/api/release/infoByRelease?jiraRelease='
+                        url: '/api/release/getReleaseNote?jiraRelease='
+                    },
+                    {
+                        text: 'Get release notes as string',
+                        key: 'getReleaseNotesString',
+                        searchParam: 'Enter release',
+                        url: '/api/release/getReleaseNoteString?jiraRelease='
                     }
                 ],
                 response: null,

@@ -7,9 +7,10 @@ import java.util.stream.Collectors
 
 class TaskMapper {
     companion object {
-        fun getTask(taskDto: TaskDto) = Task(
+        fun getTask(taskDto: TaskDto, jiraUrl: String) = Task(
             id = taskDto.id,
             key = taskDto.key,
+            link = "$jiraUrl/browse/" + taskDto.key,
             summary = taskDto.fields.summary,
             status = taskDto.fields.status?.get("name")?.toString() ?: "",
             description = taskDto.fields.description ?: "",

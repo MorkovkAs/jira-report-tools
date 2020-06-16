@@ -113,6 +113,12 @@ Type: `GET`\
 Url: `/api/release/infoByRelease?jiraRelease={fixVersion}&limit={limit}`\
 Returns test cases and deploy instructions of the issues for the given fixVersion.
 
+##### Get release report by jiraRelease
+
+Type: `GET`\
+Url: `/release/getReleaseNote?jiraRelease={fixVersion}&limit={limit}`\
+Returns release report data for the given fixVersion.
+
 ## Thanks!
 Any questions or problems give me a shout on email avklimakov@gmail.com
 

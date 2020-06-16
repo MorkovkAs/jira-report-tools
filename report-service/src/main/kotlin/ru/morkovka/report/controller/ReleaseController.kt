@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.service.ReleaseService
 
 @RestController
@@ -19,4 +20,16 @@ class ReleaseController(
         @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
         @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
     ): MutableMap<String, MutableList<String>> = releaseService.getTasksTestingAndDeployInfoByJiraRelease(jiraRelease, limit)
+
+    @GetMapping("/getReleaseNote")
+    fun getReleaseNoteByJiraRelease(
+        @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
+        @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
+    ): ReleaseNote = releaseService.getReleaseNoteByJiraRelease(jiraRelease, limit)
+
+    @GetMapping("/getReleaseNoteString")
+    fun releaseNoteByJiraReleaseToString(
+        @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
+        @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
+    ): String = releaseService.getReleaseNoteToString(jiraRelease, limit)
 }
