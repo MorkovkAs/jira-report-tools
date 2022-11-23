@@ -93,18 +93,21 @@ class TaskServiceImpl(
         return taskList
     }
 
-    private fun getRequestJsonForJqlQuery(jqlString: String, maxResults: Int) =
-        "{\n" +
-                "    \"jql\": \"$jqlString ORDER BY key ASC\",\n" +
-                "    \"startAt\": 0,\n" +
-                "    \"maxResults\": $maxResults,\n" +
-                "    \"fields\": [\n" +
-                "        \"summary\",\n" +
-                "        \"status\",\n" +
-                "        \"description\",\n" +
-                "        \"fixVersions\",\n" +
-                "        \"comment\"\n" +
-                "    ]\n" +
-                "}"
+    /**
+     * Generates a JQL search string. customfield_13700 is our custom field for external tasks.
+     */
+    private fun getRequestJsonForJqlQuery(jqlString: String, maxResults: Int) = """{
+    "jql": "$jqlString ORDER BY key ASC",
+    "startAt": 0,
+    "maxResults": $maxResults,
+    "fields": [
+        "summary",
+        "status",
+        "description",
+        "fixVersions",
+        "comment",
+        "customfield_13700"
+    ]
+}"""
 
 }

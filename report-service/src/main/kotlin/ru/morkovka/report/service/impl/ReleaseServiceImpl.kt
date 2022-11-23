@@ -16,8 +16,8 @@ import java.util.stream.Collectors
 
 @Service
 class ReleaseServiceImpl(
-    @Value("\${jira.search.default.task.out.paragraph}")
-    val taskOutParagraph: String,
+    @Value("\${jira.search.default.task.paragraph}")
+    val tasksParagraph: String,
 
     @Value("\${jira.search.default.task.in.start}")
     val taskInStart: String,
@@ -95,35 +95,59 @@ class ReleaseServiceImpl(
         if (note.taskInKey.isNotEmpty()) {
             taskIn = "{Jira:${note.taskInKey}}"
         }
-        val s = "$taskOutParagraph\n" +
-                "\n\n${taskInParagraph}\n$taskIn" +
-                "\n\n${commentProperties.sourceCode.paragraph}\n${stringFromMapWithoutTaskKeys(
-                    note.sourceCode, commentProperties.sourceCode.default
-                )}" +
-                "\n\n${commentProperties.artifact.paragraph}\n${stringFromMapWithoutTaskKeys(
-                    note.artifact, commentProperties.artifact.default
-                )}" +
-                "\n\n${commentProperties.newFeature.paragraph}\n${stringFromFeatures(
-                    note.features, note.jiraKeysMap, commentProperties.newFeature.default
-                )}" +
-                "\n\n${commentProperties.databaseChange.paragraph}\n${stringFromMapWithoutTaskKeys(
-                    note.dbChanges, commentProperties.databaseChange.default
-                )}" +
-                "\n\n${commentProperties.monitoringChange.paragraph}\n${stringFromMapWithoutTaskKeys(
-                    note.monitoringChanges, commentProperties.monitoringChange.default
-                )}" +
-                "\n\n${commentProperties.config.paragraph}\n${stringFromMapWithoutTaskKeys(
-                    note.configs, commentProperties.config.default
-                )}" +
-                "\n\n${commentProperties.deployInstruction.paragraph}\n${stringFromMapWithoutTaskKeys(
-                    note.deploy, commentProperties.deployInstruction.default
-                )}" +
-                "\n\n${commentProperties.testCase.paragraph}\n${stringFromMapWithTaskKeys(
-                    note.testCase, true, commentProperties.testCase.default
-                )}" +
-                "\n\n${commentProperties.rollbackAction.paragraph}\n${stringFromMapWithoutTaskKeys(
-                    note.rollback, commentProperties.rollbackAction.default
-                )}"
+        val s = """
+{toc:printable=true|maxLevel=7|minLevel=1|type=list|separator=brackets}
+            
+$tasksParagraph      
+$taskInParagraph
+* $taskIn
+* 
+
+${commentProperties.sourceCode.paragraph}
+${stringFromMapWithoutTaskKeys(
+    note.sourceCode, commentProperties.sourceCode.default
+)}
+                
+${commentProperties.artifact.paragraph}
+${stringFromMapWithoutTaskKeys(
+    note.artifact, commentProperties.artifact.default
+)}
+                
+${commentProperties.newFeature.paragraph}
+${stringFromFeatures(
+    note.features, commentProperties.newFeature.default
+)}
+                
+${commentProperties.databaseChange.paragraph}
+${stringFromMapWithoutTaskKeys(
+    note.dbChanges, commentProperties.databaseChange.default
+)}
+                
+${commentProperties.monitoringChange.paragraph}
+${stringFromMapWithoutTaskKeys(
+    note.monitoringChanges, commentProperties.monitoringChange.default
+)}
+                
+${commentProperties.config.paragraph}
+${stringFromMapWithoutTaskKeys(
+    note.configs, commentProperties.config.default
+)}
+                
+${commentProperties.deployInstruction.paragraph}
+${stringFromMapWithoutTaskKeys(
+    note.deploy, commentProperties.deployInstruction.default
+)}
+                
+${commentProperties.testCase.paragraph}
+${stringFromMapWithTaskKeys(
+    note.testCase, true, commentProperties.testCase.default
+)}
+                
+${commentProperties.rollbackAction.paragraph}
+${stringFromMapWithoutTaskKeys(
+    note.rollback, commentProperties.rollbackAction.default
+)}
+"""
 
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: ReleaseNote to String convertation completed")
 
@@ -140,30 +164,21 @@ class ReleaseServiceImpl(
 
     private fun getReleaseNoteFromTaskList(taskList: MutableList<Task>): ReleaseNote {
         val taskIn = taskList.filter { it.summary.startsWith(taskInStart) }.getOrNull(0)
-        val jiraKeys: MutableMap<String, String> = mutableMapOf()
         val features: MutableMap<String, TaskFeature> = mutableMapOf()
         taskList
             .filter { !it.summary.startsWith((taskInStart)) }
             .forEach {
-                // Fill collection for mapping jira tasks
-                val regex = ("(\\[ссылка\\|https*://jcs\\.passport\\.local/(browse|projects/MDM/issues)/MDM-[0-9]+]" +
-                        " на задачу в джире ДИТа)").toRegex(RegexOption.IGNORE_CASE)
-                val taskOutKey = regex.find(it.description)
-                if (taskOutKey != null) {
-                    jiraKeys[it.key] = "MDM-[0-9]+".toRegex(RegexOption.IGNORE_CASE).find(taskOutKey.value)?.value ?: ""
-                }
-
                 // Fill release features
                 features[it.key] = TaskFeature(
                     key = it.key,
                     link = it.link,
-                    summary = it.summary
+                    summary = it.summary,
+                    externalJiraKey = "NMDM-[0-9]+".toRegex(RegexOption.IGNORE_CASE).find(it.externalJiraLink)?.value ?: ""
                 )
             }
 
         val note = ReleaseNote(
             taskInKey = taskIn?.key ?: "",
-            jiraKeysMap = jiraKeys,
             sourceCode = getCommentsFromTaskListByKeyword(taskList, commentProperties.sourceCode.start),
             artifact = getCommentsFromTaskListByKeyword(taskList, commentProperties.artifact.start),
             features = features,
@@ -232,18 +247,20 @@ class ReleaseServiceImpl(
      * @return String consisted of features' info.
      */
 
-    private fun stringFromFeatures(map: MutableMap<String, TaskFeature>, keyMap: MutableMap<String, String>, defaultValue: String): String {
+    private fun stringFromFeatures(map: MutableMap<String, TaskFeature>, defaultValue: String): String {
         if (map.isEmpty()) {
             return defaultValue
         }
 
-        var s = "||Задача в jira||Задача в jira ТаскДата||Наименование задачи в jira ТаскДата||";
+        var s = "||Задача ДИТ||Задача ЮД||Наименование||"
         map.forEach { (key, task) ->
-            var taskOutKey = keyMap.getOrDefault(key, " ")
-            if (taskOutKey != " ") {
-                taskOutKey = "{Jira:$taskOutKey}"
+            var externalJiraKey = task.externalJiraKey
+            if (externalJiraKey.trim().isNotEmpty()) {
+                externalJiraKey = "{Jira:${externalJiraKey}}"
+            } else {
+                externalJiraKey = " "
             }
-            s += "\n|$taskOutKey|{Jira:$key}|${task.summary}|"
+            s += "\n|$externalJiraKey|{Jira:$key}|${task.summary}|"
         }
         return s
     }

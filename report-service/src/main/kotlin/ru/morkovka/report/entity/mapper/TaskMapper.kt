@@ -19,6 +19,7 @@ class TaskMapper {
                 .map { it["name"] }
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList()),
+            externalJiraLink = taskDto.fields.customfield_13700 ?: "",
             comments = (taskDto.fields.comment?.comments ?: arrayListOf<Map<String, Any>>()).stream()
                 .filter(Objects::nonNull)
                 .map { it["body"] as String }

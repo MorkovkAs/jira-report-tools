@@ -7,12 +7,6 @@ data class ReleaseNote(
     var taskInKey: String,
 
     /**
-     * Map to store corresponded Jira keys of issues.
-     * The key in map is a key from our Jira, the value in map is a key of task in customer's Jira
-     */
-    var jiraKeysMap: MutableMap<String, String>,
-
-    /**
      * Исходные коды
      */
     var sourceCode: MutableMap<String, MutableList<String>>,

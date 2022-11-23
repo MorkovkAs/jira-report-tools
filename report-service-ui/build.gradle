@@ -16,7 +16,7 @@ group = "com.morkovka.jira-report-tools"
 version '0.0.1'
 
 java {
-    targetCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 frontend {

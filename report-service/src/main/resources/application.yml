@@ -10,7 +10,7 @@ jira:
     basic: ${JIRA_AUTH_BASIC:Basic TW9ya292a0E6bXlTdXBlclBhc3M}
   paragraph:
     font:
-      size: "h3."
+      size: "h1."
   start:
     font:
       size: "h2."
@@ -19,45 +19,44 @@ jira:
       project: "DM"
       limit: 15
       task:
-        out:
-          paragraph: "${jira.paragraph.font.size}Задача в Jira заказчика"
+        paragraph: "${jira.paragraph.font.size}*Ресурсы*"
         in:
-          start: "Релиз КСРД"
-          paragraph: "${jira.paragraph.font.size}Задача в Jira ТД"
+          start: "Релиз "
+          paragraph: "_Задача в Jira:_"
       comment:
         source-code:
           start: "${jira.start.font.size}Исходные коды:"
-          paragraph: "${jira.paragraph.font.size}Исходные коды"
+          paragraph: "_Исходные коды:_"
           default: ${SOURCE_CODE:*{color:#FF0000}Не заполнено.{color}*}
         artifact:
           start: "${jira.start.font.size}Артефакты:"
-          paragraph: "${jira.paragraph.font.size}Артефакты"
+          paragraph: "${jira.paragraph.font.size}*Артефакты*"
           default: ${STORAGE_LINK:*{color:#FF0000}Не заполнено.{color}*}
         new-feature:
           start: "${jira.start.font.size}Новые функции и исправления:"
-          paragraph: "${jira.paragraph.font.size}Новые функции и исправления"
+          paragraph: "${jira.paragraph.font.size}*Новые функции и исправления*"
           default: "*{color:#FF0000}Не заполнено.{color}*"
         database-change:
           start: "${jira.start.font.size}Настройки и изменения в структуре БД, атрибутах, справочниках:"
-          paragraph: "${jira.paragraph.font.size}Настройки и изменения в структуре БД, атрибутах, справочниках"
-          default: "Не применимо."
+          paragraph: "${jira.paragraph.font.size}*Настройки и изменения в структуре БД, атрибутах, справочниках*"
+          default: "Не требуется."
         monitoring-change:
           start: "${jira.start.font.size}Информация для подключений и мониторинга:"
-          paragraph: "${jira.paragraph.font.size}Информация для подключений и мониторинга"
-          default: "Не применимо."
+          paragraph: "${jira.paragraph.font.size}*Информация для подключений и мониторинга*"
+          default: "Не требуется."
         config:
           start: "${jira.start.font.size}Конфигурация:"
-          paragraph: "${jira.paragraph.font.size}Конфигурация"
-          default: "Не применимо."
+          paragraph: "${jira.paragraph.font.size}*Конфигурация*"
+          default: "Не требуется."
         deploy-instruction:
           start: "${jira.start.font.size}Порядок установки и изменения настроек:"
-          paragraph: "${jira.paragraph.font.size}Порядок установки и изменения настроек"
-          default: "Не применимо."
+          paragraph: "${jira.paragraph.font.size}*Порядок установки и изменения настроек*"
+          default: "Не требуется."
         test-case:
           start: "${jira.start.font.size}План тестирования у заказчика:"
-          paragraph: "${jira.paragraph.font.size}План тестирования"
-          default: "Выполнить соответствующие базовые сценарии для проверки функционала после деплоймента"
+          paragraph: "${jira.paragraph.font.size}*План тестирования*"
+          default: "Выполнить соответствующие быстрые тесты для релиза"
         rollback-action:
           start: "${jira.start.font.size}План отката:"
-          paragraph: "${jira.paragraph.font.size}План отката"
+          paragraph: "${jira.paragraph.font.size}*План отката*"
           default: "Откатить обновленные артефакты на предыдущие версии."
