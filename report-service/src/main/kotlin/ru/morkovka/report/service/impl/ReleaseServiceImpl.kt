@@ -168,12 +168,26 @@ ${stringFromMapWithoutTaskKeys(
         taskList
             .filter { !it.summary.startsWith((taskInStart)) }
             .forEach {
+                // Current track from custom jira attribute
+                var externalJiraKey = "N?MDM-[0-9]+".toRegex(RegexOption.IGNORE_CASE).find(it.externalJiraLink)?.value ?: ""
+
+                // Old track for old tasks. Getting links from description
+                if (externalJiraKey.isBlank()) {
+                    val regex =
+                        ("(\\[ссылка\\|https*://(jcs|data)\\.passport\\.local(:8080)?/(browse|projects/MDM/issues)/N?MDM-[0-9]+]" +
+                                " на задачу в джире ДИТа)").toRegex(RegexOption.IGNORE_CASE)
+                    val taskOutKey = regex.find(it.description)
+                    if (taskOutKey != null) {
+                        externalJiraKey = "N?MDM-[0-9]+".toRegex(RegexOption.IGNORE_CASE).find(taskOutKey.value)?.value ?: ""
+                    }
+                }
+
                 // Fill release features
                 features[it.key] = TaskFeature(
                     key = it.key,
                     link = it.link,
                     summary = it.summary,
-                    externalJiraKey = "NMDM-[0-9]+".toRegex(RegexOption.IGNORE_CASE).find(it.externalJiraLink)?.value ?: ""
+                    externalJiraKey = externalJiraKey
                 )
             }
 

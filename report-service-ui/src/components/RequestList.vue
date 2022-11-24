@@ -24,13 +24,13 @@
                             <input v-model="token" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
                         </label>
                     </p>
-                    <Recaptcha
+                    <!--<Recaptcha
                             :sitekey=recaptchaKey
                             :loadRecaptchaScript="true"
                             ref="recaptcha"
                             @verify="onVerify"
                             @expired="onExpired"
-                            align="center"/>
+                            align="center"/>-->
                     <!--<button v-on:click="resetRecaptcha"> Reset ReCAPTCHA</button>-->
                     <p>
                         <button v-on:click="sendRequest" v-bind:disabled=!isOkToSend>Send</button>
@@ -55,15 +55,15 @@
 <script>
     import Issue from './Issue.vue'
     import Error from './Error.vue'
-    import Recaptcha from 'vue-recaptcha';
+    //import Recaptcha from 'vue-recaptcha';
     import axios from "axios"
 
     export default {
         name: "JiraRequests",
         components: {
             Issue,
-            Error,
-            Recaptcha
+            Error//,
+            //Recaptcha
         },
 
         data() {
@@ -125,7 +125,7 @@
         },
         computed: {
             isOkToSend() {
-                return this.verified && this.requestKey && this.token;
+                return /**this.verified &&**/ this.requestKey && this.token;
             },
             searchParamType: function () {
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);

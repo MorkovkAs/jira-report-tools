@@ -1,6 +1,6 @@
 <template>
   <div class="Footer">
-    <h4>&copy; 2020 Anton Klimakov</h4>
+    <h4>&copy; 2020 Anton Klimakov v0.1.0</h4>
     <ul>
       <li><a href="https://github.com/MorkovkAs/jira-report-tools" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
