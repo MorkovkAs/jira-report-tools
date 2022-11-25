@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "com.morkovka.jira-report-tools"
-version '0.1.0'
+version '0.1.1'
 
 java {
     targetCompatibility = JavaVersion.VERSION_11

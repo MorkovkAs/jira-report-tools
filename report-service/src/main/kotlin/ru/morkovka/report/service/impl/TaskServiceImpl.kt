@@ -21,10 +21,7 @@ import java.util.stream.Collectors
 @Service
 class TaskServiceImpl(
     @Value("\${jira.url}")
-    private val jiraUrl: String,
-
-    @Value("\${jira.search.default.project}")
-    private val jiraProject: String
+    private val jiraUrl: String
 ) : TaskService {
 
     @Autowired
@@ -82,11 +79,12 @@ class TaskServiceImpl(
      *  Search and minimize representations of all the issues for the given fix version.
      *  It creates jql string and search by {@code TaskServiceImpl#getTasksByJqlString}
      *
+     *  @param jiraProject the code of the jira project to search by. For example "DM"
      *  @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
      *  @param limit on the number of returned issues from Jira
      *  @return the list of issues with summary, status, description, fixVersions, comments
      */
-    override fun getTasksByJiraRelease(jiraFixVersion: String, limit: Int): MutableList<Task> {
+    override fun getTasksByJiraRelease(jiraProject: String, jiraFixVersion: String, limit: Int): MutableList<Task> {
         val taskList = getTasksByJqlString("project = $jiraProject AND fixVersion = $jiraFixVersion", limit)
         logger.info("getTasksByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
 

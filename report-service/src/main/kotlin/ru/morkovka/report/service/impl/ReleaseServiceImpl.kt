@@ -42,15 +42,16 @@ class ReleaseServiceImpl(
      *  test cases or deploy instructions.
      *  Limitations: All comments have to be checked by {@code String.startsWith}, now it is not always true
      *
+     *  @param jiraProject the code of the jira project to search by. For example "DM"
      *  @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
      *  @param limit on the number of returned issues from Jira
      *  @return the map of <issue key, comments> with test cases and instructions for deploy
      */
-    override fun getTasksTestingAndDeployInfoByJiraRelease(jiraFixVersion: String, limit: Int): MutableMap<String,
+    override fun getTasksTestingAndDeployInfoByJiraRelease(jiraProject: String, jiraFixVersion: String, limit: Int): MutableMap<String,
             MutableList<String>> {
         // Map to store special comments for test cases and deploy instructions for each task
         val commentsMap: MutableMap<String, MutableList<String>>
-        val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
+        val taskList = taskServiceImpl.getTasksByJiraRelease(jiraProject, jiraFixVersion, limit)
 
         commentsMap = mergeMaps(
             getCommentsFromTaskListByKeyword(taskList, commentProperties.testCase.start),
@@ -66,13 +67,14 @@ class ReleaseServiceImpl(
      * Search for every task suites for fix version by {@code TaskServiceImpl#getTasksByJiraRelease}.
      * Then all relevant tasks are transformed into custom ReleaseNote class.
      *
+     * @param jiraProject the code of the jira project to search by. For example "DM"
      * @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
      * @param limit on the number of returned issues from Jira
      * @return the custom class ReleaseNote, which fields contains all necessary information to form release report
      */
 
-    override fun getReleaseNoteByJiraRelease(jiraFixVersion: String, limit: Int): ReleaseNote {
-        val taskList = taskServiceImpl.getTasksByJiraRelease(jiraFixVersion, limit)
+    override fun getReleaseNoteByJiraRelease(jiraProject: String, jiraFixVersion: String, limit: Int): ReleaseNote {
+        val taskList = taskServiceImpl.getTasksByJiraRelease(jiraProject, jiraFixVersion, limit)
         return getReleaseNoteFromTaskList(taskList)
     }
 
@@ -81,13 +83,14 @@ class ReleaseServiceImpl(
      * Then all relevant tasks are transformed into custom ReleaseNote class.
      * And finally construct String contains readable release report with markdown tags.
      *
+     * @param jiraProject the code of the jira project to search by. For example "DM"
      * @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
      * @param limit on the number of returned issues from Jira
      * @return the String contains
      */
 
-    override fun getReleaseNoteToString(jiraFixVersion: String, limit: Int): String {
-        val note = getReleaseNoteByJiraRelease(jiraFixVersion, limit)
+    override fun getReleaseNoteToString(jiraProject: String, jiraFixVersion: String, limit: Int): String {
+        val note = getReleaseNoteByJiraRelease(jiraProject, jiraFixVersion, limit)
 
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: convertation started")
 

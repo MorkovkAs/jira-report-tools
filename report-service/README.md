@@ -33,13 +33,6 @@ For example:
 jira.auth.basic=Basic TW9ya292a0E6bXlTdXBlclBhc3M=
 ```
 
-##### jira.search.default.project
-
-*Required*\
-Type: `String`
-
-Default name of the project for Jira.
-
 ##### jira.search.default.limit
 
 *Required*\
@@ -104,19 +97,19 @@ Returns a representation of the issue for the given issue key.
 ##### Get issues by fixVersion
 
 Type: `GET`\
-Url: `/api/task/byRelease?jiraRelease={fixVersion}&limit={limit}`\
+Url: `/api/task/byRelease?jiraProject={&jiraProject}&jiraRelease={fixVersion}&limit={limit}`\
 Returns a list of representation of the issues for the given fixVersion.
 
 ##### Get testing info for issues by fixVersion
 
 Type: `GET`\
-Url: `/api/release/infoByRelease?jiraRelease={fixVersion}&limit={limit}`\
+Url: `/api/release/infoByRelease?jiraProject={&jiraProject}&jiraRelease={fixVersion}&limit={limit}`\
 Returns test cases and deploy instructions of the issues for the given fixVersion.
 
 ##### Get release report by jiraRelease
 
 Type: `GET`\
-Url: `/release/getReleaseNote?jiraRelease={fixVersion}&limit={limit}`\
+Url: `/release/getReleaseNote?jiraProject={&jiraProject}&jiraRelease={fixVersion}&limit={limit}`\
 Returns release report data for the given fixVersion.
 
 ## Thanks!

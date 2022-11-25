@@ -15,6 +15,11 @@
                         <input v-model="requestKey" v-bind:disabled=!requestTypeSelected :placeholder="[[ searchParamType ]]">
                     </p>
                     <p>
+                        <label> Project Code:
+                            <input v-model="projectCode" v-bind:disabled=!requestTypeSelected style=" width: 60px; margin: 0px">
+                        </label>
+                    </p>
+                    <p>
                         <label> Limit by:
                             <input v-model="requestLimit" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
                         </label>
@@ -72,6 +77,7 @@
                 requestTypeSelected: '',
                 requestKey: '',
                 requestLimit: 15,
+                projectCode: 'DM',
                 token: '',
                 requestOptions: [
                     {
@@ -151,7 +157,7 @@
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);
                 let resultUrl = item.url + this.requestKey;
                 if (item.key !== 'getIssue') {
-                    resultUrl += '&limit=' + this.requestLimit
+                    resultUrl += '&limit=' + this.requestLimit + '&jiraProject=' + this.projectCode
                 }
 
                 this.firstRequestSend = true;

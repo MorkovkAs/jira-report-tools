@@ -26,7 +26,8 @@ class TaskController(
 
     @GetMapping("/byRelease")
     fun getTaskListByRelease(
+        @RequestParam(value = "jiraProject", required = true) jiraProject: String,
         @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
         @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
-    ): MutableList<Task> = taskService.getTasksByJiraRelease(jiraRelease, limit)
+    ): MutableList<Task> = taskService.getTasksByJiraRelease(jiraProject, jiraRelease, limit)
 }

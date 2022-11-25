@@ -38,9 +38,8 @@ Go to [localhost](http://localhost:8080) page.
 * [x] commit `report-service-ui` package with basic implementation of a client side on Vue.js
 * [x] upgrade client side to support sending requests of all types
 * [x] conversion of the release notes, in accordance with our project template
-* [x] deploy to Heroku
-* [ ] creating tasks with release info
-* [ ] adding UI form validation
+* [x] deploy
+* [ ] creating confluence pages with release info
 * [ ] some cool things:)
 
 ## Thanks!

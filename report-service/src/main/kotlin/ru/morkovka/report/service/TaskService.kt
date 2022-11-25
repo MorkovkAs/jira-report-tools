@@ -8,5 +8,5 @@ interface TaskService {
 
     fun getTaskByJiraKey(jiraKey: String): Task
 
-    fun getTasksByJiraRelease(jiraFixVersion: String, limit: Int): MutableList<Task>
+    fun getTasksByJiraRelease(jiraProject: String, jiraFixVersion: String, limit: Int): MutableList<Task>
 }

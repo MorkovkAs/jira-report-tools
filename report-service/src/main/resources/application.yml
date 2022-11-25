@@ -16,7 +16,6 @@ jira:
       size: "h2."
   search:
     default:
-      project: "DM"
       limit: 15
       task:
         paragraph: "${jira.paragraph.font.size}*Ресурсы*"

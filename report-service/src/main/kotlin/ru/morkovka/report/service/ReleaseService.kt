@@ -4,9 +4,9 @@ import ru.morkovka.report.entity.ReleaseNote
 
 interface ReleaseService {
 
-    fun getTasksTestingAndDeployInfoByJiraRelease(jiraFixVersion: String, limit: Int): MutableMap<String, MutableList<String>>
+    fun getTasksTestingAndDeployInfoByJiraRelease(jiraProject: String, jiraFixVersion: String, limit: Int): MutableMap<String, MutableList<String>>
 
-    fun getReleaseNoteByJiraRelease(jiraFixVersion: String, limit: Int): ReleaseNote
+    fun getReleaseNoteByJiraRelease(jiraProject: String, jiraFixVersion: String, limit: Int): ReleaseNote
 
-    fun getReleaseNoteToString(jiraFixVersion: String, limit: Int): String
+    fun getReleaseNoteToString(jiraProject: String, jiraFixVersion: String, limit: Int): String
 }
