@@ -32,8 +32,6 @@ class ReleaseServiceImpl(
     @Autowired
     private lateinit var taskServiceImpl: TaskServiceImpl
 
-    private val default = "DEFAULT"
-
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     /**
@@ -118,7 +116,12 @@ ${stringFromMapWithoutTaskKeys(
                 
 ${commentProperties.newFeature.paragraph}
 ${stringFromFeatures(
-    note.features, commentProperties.newFeature.default
+    note.features, commentProperties.newFeature.default, isForUs = true
+)}
+      
+${commentProperties.newFeature.paragraph_external}
+${stringFromFeatures(
+    note.features, commentProperties.newFeature.default, isForUs = false
 )}
                 
 ${commentProperties.databaseChange.paragraph}
@@ -261,23 +264,29 @@ ${stringFromMapWithoutTaskKeys(
      * @param map fields contains String and TaskFeature class.
      * @param keyMap contains map of keys.
      * @param defaultValue String with default value returning when map is empty.
+     * @param isForUs sign for adding plugin {jira:...}
      * @return String consisted of features' info.
      */
 
-    private fun stringFromFeatures(map: MutableMap<String, TaskFeature>, defaultValue: String): String {
+    private fun stringFromFeatures(map: MutableMap<String, TaskFeature>, defaultValue: String, isForUs: Boolean): String {
         if (map.isEmpty()) {
             return defaultValue
         }
 
         var s = "||Задача ДИТ||Задача ЮД||Наименование||"
         map.forEach { (key, task) ->
-            var externalJiraKey = task.externalJiraKey
-            if (externalJiraKey.trim().isNotEmpty()) {
-                externalJiraKey = "{Jira:${externalJiraKey}}"
+            var externalJiraKey = task.externalJiraKey.trim()
+
+            if (isForUs) {
+                s += "\n|$externalJiraKey|{Jira:$key}|${task.summary}|"
             } else {
-                externalJiraKey = " "
+                if (externalJiraKey.isNotEmpty()) {
+                    externalJiraKey = "{Jira:${externalJiraKey}}"
+                }
+
+                val ourTaskNumber = "[0-9]+".toRegex(RegexOption.IGNORE_CASE).find(key)?.value ?: ""
+                s += "\n|$externalJiraKey|$ourTaskNumber|${task.summary}|"
             }
-            s += "\n|$externalJiraKey|{Jira:$key}|${task.summary}|"
         }
         return s
     }

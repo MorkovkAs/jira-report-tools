@@ -19,6 +19,7 @@ data class CommentProperties(
     data class Type(
         val start: String,
         val paragraph: String,
+        val paragraph_external: String?,
         val default: String
     )
 }

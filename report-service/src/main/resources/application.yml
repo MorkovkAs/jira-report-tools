@@ -10,10 +10,10 @@ jira:
     basic: ${JIRA_AUTH_BASIC:Basic TW9ya292a0E6bXlTdXBlclBhc3M}
   paragraph:
     font:
-      size: "h1."
+      size: "h1. "
   start:
     font:
-      size: "h2."
+      size: "h2. "
   search:
     default:
       limit: 15
@@ -34,6 +34,7 @@ jira:
         new-feature:
           start: "${jira.start.font.size}Новые функции и исправления:"
           paragraph: "${jira.paragraph.font.size}*Новые функции и исправления*"
+          paragraph_external: "${jira.paragraph.font.size}*Новые функции и исправления (Версия для заказчика)*"
           default: "*{color:#FF0000}Не заполнено.{color}*"
         database-change:
           start: "${jira.start.font.size}Настройки и изменения в структуре БД, атрибутах, справочниках:"
