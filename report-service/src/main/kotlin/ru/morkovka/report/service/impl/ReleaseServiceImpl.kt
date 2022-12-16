@@ -275,12 +275,13 @@ ${stringFromMapWithoutTaskKeys(
 
         var s = "||Задача ДИТ||Задача ЮД||Наименование||"
         map.forEach { (key, task) ->
-            var externalJiraKey = task.externalJiraKey.trim()
+            var externalJiraKey = task.externalJiraKey
+            if(externalJiraKey.isEmpty()) externalJiraKey = " "
 
             if (isForUs) {
                 s += "\n|$externalJiraKey|{Jira:$key}|${task.summary}|"
             } else {
-                if (externalJiraKey.isNotEmpty()) {
+                if (externalJiraKey.trim().isNotEmpty()) {
                     externalJiraKey = "{Jira:${externalJiraKey}}"
                 }
 
