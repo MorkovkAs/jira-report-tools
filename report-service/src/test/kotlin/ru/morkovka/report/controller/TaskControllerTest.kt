@@ -18,7 +18,7 @@ class TaskControllerTest {
     @Autowired
     private lateinit var restTemplate: RestTemplate
 
-    val port: String = System.getenv("PORT") ?: "8081"
+    val port: String = System.getenv("PORT") ?: "80"
 
     @Ignore("Need to add Authorization header")
     @Test
