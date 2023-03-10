@@ -1,3 +1,6 @@
+server:
+  port : 8081
+
 auth:
   encoder:
     strength: ${ENCODER_STRENGTH:5}
@@ -14,6 +17,19 @@ jira:
   start:
     font:
       size: "h2. "
+  release:
+    offline-merge:
+      name: "offline-merge"
+      sources: "_Исходные коды_:\n
+  * https://host:port/-/tree/vXXXXX"
+    kzd2:
+      name: "kzd2"
+      sources: "_Исходные коды_:\n
+  * https://host:port/-/tree/vXXXXX"
+    ksrd:
+      name: "ksrd"
+      sources: "_Исходные коды_:\n
+  * https://host:port/-/tree/vXXXXX"
   search:
     default:
       limit: 15
@@ -35,23 +51,11 @@ jira:
           start: "${jira.start.font.size}Новые функции и исправления:"
           paragraph: "${jira.paragraph.font.size}*Новые функции и исправления*"
           paragraph_external: "${jira.paragraph.font.size}*Новые функции и исправления (Версия для заказчика)*"
-          default: "*{color:#FF0000}Не заполнено.{color}*"
-        database-change:
-          start: "${jira.start.font.size}Настройки и изменения в структуре БД, атрибутах, справочниках:"
-          paragraph: "${jira.paragraph.font.size}*Настройки и изменения в структуре БД, атрибутах, справочниках*"
-          default: "Не требуется."
-        monitoring-change:
-          start: "${jira.start.font.size}Информация для подключений и мониторинга:"
-          paragraph: "${jira.paragraph.font.size}*Информация для подключений и мониторинга*"
-          default: "Не требуется."
-        config:
-          start: "${jira.start.font.size}Конфигурация:"
-          paragraph: "${jira.paragraph.font.size}*Конфигурация*"
-          default: "Не требуется."
+          default: "*{color:#FF0000}Не заполнено{color}*"
         deploy-instruction:
-          start: "${jira.start.font.size}Порядок установки и изменения настроек:"
+          start: "${jira.start.font.size}Порядок установки:"
           paragraph: "${jira.paragraph.font.size}*Порядок установки и изменения настроек*"
-          default: "Не требуется."
+          default: "*{color:#FF0000}Не заполнено{color}*"
         test-case:
           start: "${jira.start.font.size}План тестирования у заказчика:"
           paragraph: "${jira.paragraph.font.size}*План тестирования*"
@@ -59,4 +63,18 @@ jira:
         rollback-action:
           start: "${jira.start.font.size}План отката:"
           paragraph: "${jira.paragraph.font.size}*План отката*"
-          default: "Откатить обновленные артефакты на предыдущие версии."
+          default: "Откатить обновленные артефакты на предыдущие версии"
+
+# deprecated
+        database-change:
+          start: "${jira.start.font.size}Настройки и изменения в структуре БД, атрибутах, справочниках:"
+          paragraph: "${jira.paragraph.font.size}*Настройки и изменения в структуре БД, атрибутах, справочниках*"
+          default: "Не требуется"
+        monitoring-change:
+          start: "${jira.start.font.size}Информация для подключений и мониторинга:"
+          paragraph: "${jira.paragraph.font.size}*Информация для подключений и мониторинга*"
+          default: "Не требуется"
+        config:
+          start: "${jira.start.font.size}Конфигурация:"
+          paragraph: "${jira.paragraph.font.size}*Конфигурация*"
+          default: "Не требуется"

@@ -24,8 +24,13 @@ $ git clone https://github.com/MorkovkAs/jira-report-tools/
 Build and run project:
 ```
 $ cd jira-report-tools/
+then
 $ ./gradlew build
 $ ./gradlew bootRun
+or 
+$ ./gradlew bootJar
+$ nohup java -jar report-service-0.3.0.jar > /dev/null 2>&1 &
+$ nohup java -jar -DLogback.configurationFile=logback.xml report-service-0.3.0.jar > /dev/null 2>&1 &
 ```
 Go to [localhost](http://localhost:8080) page.
 

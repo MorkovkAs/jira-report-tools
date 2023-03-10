@@ -97,19 +97,25 @@ Returns a representation of the issue for the given issue key.
 ##### Get issues by fixVersion
 
 Type: `GET`\
-Url: `/api/task/byRelease?jiraProject={&jiraProject}&jiraRelease={fixVersion}&limit={limit}`\
+Url: `/api/task/byRelease?jiraProject={jiraProject}&jiraRelease={fixVersion}&limit={limit}`\
 Returns a list of representation of the issues for the given fixVersion.
 
 ##### Get testing info for issues by fixVersion
 
 Type: `GET`\
-Url: `/api/release/infoByRelease?jiraProject={&jiraProject}&jiraRelease={fixVersion}&limit={limit}`\
+Url: `/api/release/infoByRelease?jiraProject={jiraProject}&jiraRelease={fixVersion}&releaseNumber={releaseNumber}&limit={limit}`\
 Returns test cases and deploy instructions of the issues for the given fixVersion.
 
 ##### Get release report by jiraRelease
 
 Type: `GET`\
-Url: `/release/getReleaseNote?jiraProject={&jiraProject}&jiraRelease={fixVersion}&limit={limit}`\
+Url: `/release/getReleaseNote?jiraProject={jiraProject}&jiraRelease={fixVersion}&releaseNumber={releaseNumber}&limit={limit}`\
+Returns release report data for the given fixVersion.
+
+##### Get release report by jiraRelease in Confluence markdown
+
+Type: `GET`\
+Url: `/release/getReleaseNoteString?jiraProject={jiraProject}&jiraRelease={fixVersion}&releaseNumber={releaseNumber}&limit={limit}`\
 Returns release report data for the given fixVersion.
 
 ## Thanks!

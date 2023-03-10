@@ -23,7 +23,25 @@ class ReleaseServiceImpl(
     val taskInStart: String,
 
     @Value("\${jira.search.default.task.in.paragraph}")
-    val taskInParagraph: String
+    val taskInParagraph: String,
+
+    @Value("\${jira.release.offline-merge.name}")
+    val offlineMergeRelease: String,
+
+    @Value("\${jira.release.offline-merge.sources}")
+    val offlineMergeReleaseSources: String,
+
+    @Value("\${jira.release.kzd2.name}")
+    val kzd2Release: String,
+
+    @Value("\${jira.release.kzd2.sources}")
+    val kzd2ReleaseSources: String,
+
+    @Value("\${jira.release.ksrd.name}")
+    val ksrdRelease: String,
+
+    @Value("\${jira.release.ksrd.sources}")
+    val ksrdReleaseSources: String
 ) : ReleaseService {
 
     @Autowired
@@ -82,12 +100,13 @@ class ReleaseServiceImpl(
      * And finally construct String contains readable release report with markdown tags.
      *
      * @param jiraProject the code of the jira project to search by. For example "DM"
-     * @param jiraFixVersion the code of the jira release to search by. For example "1.37.0"
+     * @param jiraFixVersion the code of the jira release to search by. For example "offline-merge-1.37.0"
+     * @param releaseNumber only the number of release. For example "1.37.0"
      * @param limit on the number of returned issues from Jira
      * @return the String contains
      */
 
-    override fun getReleaseNoteToString(jiraProject: String, jiraFixVersion: String, limit: Int): String {
+    override fun getReleaseNoteToString(jiraProject: String, jiraFixVersion: String, releaseNumber: String, limit: Int): String {
         val note = getReleaseNoteByJiraRelease(jiraProject, jiraFixVersion, limit)
 
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: convertation started")
@@ -104,10 +123,7 @@ $taskInParagraph
 * $taskIn
 * 
 
-${commentProperties.sourceCode.paragraph}
-${stringFromMapWithoutTaskKeys(
-    note.sourceCode, commentProperties.sourceCode.default
-)}
+${getSourceCodes(jiraFixVersion, releaseNumber, note)}
                 
 ${commentProperties.artifact.paragraph}
 ${stringFromMapWithoutTaskKeys(
@@ -122,21 +138,6 @@ ${stringFromFeatures(
 ${commentProperties.newFeature.paragraph_external}
 ${stringFromFeatures(
     note.features, commentProperties.newFeature.default, isForUs = false
-)}
-                
-${commentProperties.databaseChange.paragraph}
-${stringFromMapWithoutTaskKeys(
-    note.dbChanges, commentProperties.databaseChange.default
-)}
-                
-${commentProperties.monitoringChange.paragraph}
-${stringFromMapWithoutTaskKeys(
-    note.monitoringChanges, commentProperties.monitoringChange.default
-)}
-                
-${commentProperties.config.paragraph}
-${stringFromMapWithoutTaskKeys(
-    note.configs, commentProperties.config.default
 )}
                 
 ${commentProperties.deployInstruction.paragraph}
@@ -158,6 +159,15 @@ ${stringFromMapWithoutTaskKeys(
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: ReleaseNote to String convertation completed")
 
         return s
+    }
+
+    private fun getSourceCodes(jiraFixVersion: String, releaseNumber: String, note: ReleaseNote): String {
+        return if (jiraFixVersion.contains(offlineMergeRelease)) {
+            offlineMergeReleaseSources.replace("XXXXX", releaseNumber)
+        } else if (jiraFixVersion.contains(kzd2Release)) {
+            kzd2ReleaseSources.replace("XXXXX", releaseNumber)
+        } else
+            ksrdReleaseSources.replace("XXXXX", releaseNumber)
     }
 
     /**
@@ -276,7 +286,7 @@ ${stringFromMapWithoutTaskKeys(
         var s = "||Задача ДИТ||Задача ЮД||Наименование||"
         map.forEach { (key, task) ->
             var externalJiraKey = task.externalJiraKey
-            if(externalJiraKey.isEmpty()) externalJiraKey = " "
+            if(externalJiraKey.isBlank()) externalJiraKey = " "
 
             if (isForUs) {
                 s += "\n|$externalJiraKey|{Jira:$key}|${task.summary}|"

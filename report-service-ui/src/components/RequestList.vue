@@ -6,9 +6,17 @@
                 <td style="width: 40%">
                     <h3>Choose the type of request</h3>
                     <p>
-                        <select v-model="requestTypeSelected" autofocus>
+                        <select v-model="requestTypeSelected">
                             <option disabled value="">Choose option</option>
                             <option v-for="option in requestOptions" v-bind:key="option.key" v-bind:value="option.key">
+                                {{ option.text }}
+                            </option>
+                        </select>
+                    </p>
+                    <p>
+                        <select v-model="releasesSelected" autofocus v-on:change="onChangeRelease">
+                            <option disabled value="">Choose option</option>
+                            <option v-for="option in releasesOptions" v-bind:key="option.key" v-bind:value="option.key">
                                 {{ option.text }}
                             </option>
                         </select>
@@ -16,7 +24,7 @@
                     </p>
                     <p>
                         <label> Project Code:
-                            <input v-model="projectCode" v-bind:disabled=!requestTypeSelected style=" width: 60px; margin: 0px">
+                            <input v-model="projectCode" disabled style=" width: 60px; margin: 0px">
                         </label>
                     </p>
                     <p>
@@ -29,17 +37,43 @@
                             <input v-model="token" v-bind:disabled=!requestTypeSelected style=" width: 30px; margin: 0px">
                         </label>
                     </p>
-                    <!--<Recaptcha
-                            :sitekey=recaptchaKey
-                            :loadRecaptchaScript="true"
-                            ref="recaptcha"
-                            @verify="onVerify"
-                            @expired="onExpired"
-                            align="center"/>-->
-                    <!--<button v-on:click="resetRecaptcha"> Reset ReCAPTCHA</button>-->
                     <p>
                         <button v-on:click="sendRequest" v-bind:disabled=!isOkToSend>Send</button>
+                        <button v-on:click="copyResponse" v-bind:disabled=!isOkToCopyResult
+                                style="background-color: #34495e">Copy</button>
                     </p>
+                  <!--<Recaptcha
+                        :sitekey=recaptchaKey
+                        :loadRecaptchaScript="true"
+                        ref="recaptcha"
+                        @verify="onVerify"
+                        @expired="onExpired"
+                        align="center"/>
+                    <button v-on:click="resetRecaptcha"> Reset ReCAPTCHA</button>
+                    <p>
+                        <button v-on:click="createOrUpdateConfPage" v-bind:disabled=!isOkToCreateConfPage
+                                style="background-color: #34495e; width: 270px">Send to Confluence</button>
+                    </p>-->
+                    <div style="display: inline-block">
+                              <details class="block-round-content">
+                                  <summary style="cursor: pointer">
+                                    <font-awesome-icon icon="fa-solid fa-circle-info" size="lg"
+                                                       fade style="--fa-animation-duration: 4s; --fa-fade-opacity: 0.7"
+                                                       title="Теги в Jira для автоформирования release notes"
+                                    />
+                                    Useful tags for Jira comments:
+                                  </summary>
+                                  <p/>
+                                  <div style="display: inline-block; text-align: left;">
+                                      <p>h2. Исходные коды:</p>
+                                      <p>h2. Артефакты:</p>
+                                      <p>h2. Новые функции и исправления:</p>
+                                      <p>h2. Порядок установки:</p>
+                                      <p>h2. План тестирования у заказчика:</p>
+                                      <p>h2. План отката:</p>
+                                  </div>
+                              </details>
+                    </div>
                 </td>
                 <td style="width: 60%">
                     <h3 v-if="firstRequestSend">Result</h3>
@@ -74,49 +108,58 @@
         data() {
             return {
                 recaptchaKey: '6LfuA_8UAAAAAIaccql90DkNTuR9BL6W6bsyKDtO',
-                requestTypeSelected: '',
-                requestKey: '',
+                requestKey: '1.3.0',
                 requestLimit: 15,
-                projectCode: 'DM',
+                projectCode: 'DMKZD',
                 token: '',
+                requestTypeSelected: 'getReleaseNotesString',
                 requestOptions: [
-                    {
-                        text: 'Get issue',
-                        key: 'getIssue',
-                        searchParam: 'Enter issue key',
-                        url: '/api/task/byKey?jiraKey='
-                    },
-                    {
-                        text: 'Get issues by jql',
-                        key: 'getIssueByJql',
-                        searchParam: 'Enter jql string',
-                        url: '/api/task/byJql?jql='
-                    },
                     {
                         text: 'Get release issues',
                         key: 'getIssueInRelease',
+                        type: 'release',
                         searchParam: 'Enter release',
                         url: '/api/task/byRelease?jiraRelease='
                     },
                     {
                         text: 'Get release info',
                         key: 'getReleaseInfo',
+                        type: 'release',
                         searchParam: 'Enter release',
                         url: '/api/release/infoByRelease?jiraRelease='
                     },
                     {
                         text: 'Get release notes',
                         key: 'getReleaseNotes',
+                        type: 'release',
                         searchParam: 'Enter release',
                         url: '/api/release/getReleaseNote?jiraRelease='
                     },
                     {
                         text: 'Get release notes as string',
                         key: 'getReleaseNotesString',
+                        type: 'release',
                         searchParam: 'Enter release',
                         url: '/api/release/getReleaseNoteString?jiraRelease='
                     }
                 ],
+                releasesSelected: 'offline-merge',
+                releasesOptions: [{
+                  text: 'Offline Merge',
+                  key: 'offline-merge',
+                  value: 'offline-merge-',
+                  project: 'DMKZD'
+                }, {
+                  text: 'KZD 2',
+                  key: 'kzd2',
+                  value: 'kzd2-',
+                  project: 'DMKZD'
+                }, {
+                  text: 'KSRD',
+                  key: 'ksrd',
+                  value: '',
+                  project: 'DM'
+                }],
                 response: null,
                 error: {
                     errorCode: Int8Array,
@@ -132,6 +175,9 @@
         computed: {
             isOkToSend() {
                 return /**this.verified &&**/ this.requestKey && this.token;
+            },
+            isOkToCopyResult() {
+                return /**this.verified &&**/ this.isOkToSend && this.response !== null;
             },
             searchParamType: function () {
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);
@@ -152,12 +198,18 @@
                 this.verified = false
                 this.$refs.recaptcha.reset()
             },
+            onChangeRelease() {
+                let item = this.releasesOptions.find(item => item.key === this.releasesSelected);
+                this.projectCode = item.project
+            },
 
             sendRequest: function () {
                 let item = this.requestOptions.find(item => item.key === this.requestTypeSelected);
-                let resultUrl = item.url + this.requestKey;
-                if (item.key !== 'getIssue') {
-                    resultUrl += '&limit=' + this.requestLimit + '&jiraProject=' + this.projectCode
+                let resultUrl = item.url;
+                if (item.type === 'release') {
+                    let releaseCode = this.releasesOptions.find(item => item.key === this.releasesSelected);
+                    resultUrl += releaseCode.value + this.requestKey
+                    resultUrl += '&jiraProject=' + this.projectCode + '&limit=' + this.requestLimit + '&releaseNumber=' + this.requestKey
                 }
 
                 this.firstRequestSend = true;
@@ -188,6 +240,29 @@
                         this.errored = true;
                     })
                     .finally(() => (this.loading = false));
+            },
+
+            copyResponse: function () {
+              if (navigator.clipboard && window.isSecureContext) {
+                // navigator clipboard api method'
+                return navigator.clipboard.writeText(this.response);
+              } else {
+                // text area method
+                let textArea = document.createElement("textarea");
+                textArea.value = this.response;
+                // make the textarea out of viewport
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                textArea.style.top = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                return new Promise((res, rej) => {
+                  // here the magic happens
+                  document.execCommand('copy') ? res() : rej();
+                  textArea.remove();
+                });
+              }
             }
         }
     }
@@ -197,13 +272,13 @@
     input {
         width: 100px;
         height: 20px;
-        vertical-align: top;
+        vertical-align: center;
         margin: 5px;
     }
 
     select {
         border: 1px solid #ccc;
-        vertical-align: top;
+        vertical-align: center;
         height: 20px;
         margin: 5px;
         cursor: pointer;
@@ -220,7 +295,7 @@
     }
 
     td {
-        vertical-align: top;
+        vertical-align: center;
     }
 
     button {
@@ -233,12 +308,26 @@
         text-align: center;
         text-decoration: none;
         display: inline-block;
-        border-radius: 4px;
+        border-radius: 5px;
         cursor: pointer;
+        margin-left: 5px;
+        margin-right: 5px;
     }
 
     input:disabled, button:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+    }
+
+    .block-round-content  {
+      background: #cdf6e4; /* Цвет фона */
+      padding: 10px; /*  Поля вокруг текста */
+      font-size: 12px;
+      border-radius: 10px;
+      line-height: 0.5;
+    }
+
+    summary::marker {
+      content: "";
     }
 </style>

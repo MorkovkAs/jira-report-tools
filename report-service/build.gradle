@@ -20,7 +20,7 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 group = "ru.morkovka.jira-report-tools"
-version '0.2.1'
+version '0.3.0'
 
 repositories {
     jcenter()
@@ -51,8 +51,8 @@ task allClean(type: Delete) {
     final def dirService = "${rootDir}/report-service"
     final def dirUI = "${rootDir}/report-service-ui"
     delete "${dirUI}/build"
-    //delete "${dirUI}/node"
-    //delete "${dirUI}/node_modules"
+    delete "${dirUI}/node"
+    delete "${dirUI}/node_modules"
     delete "${dirUI}/dist"
     delete "${dirUI}/coverage"
     delete "${dirService}/src/main/resources/static"
