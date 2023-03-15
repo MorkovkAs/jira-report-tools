@@ -25,7 +25,7 @@ RUN gradle bootJar
 # BUILD END
 # =========
 
-FROM openjdk:17 AS runtime
+FROM bellsoft/liberica-openjdk-centos:17.0.4.1-1 AS runtime
 
 COPY --from=build app/report-service/build/libs/report-service-*.jar /app/report-service.jar
 
