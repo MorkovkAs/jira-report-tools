@@ -1,12 +1,13 @@
 server:
-  port : 8080
+  port : 8081
 
 auth:
   encoder:
     strength: ${ENCODER_STRENGTH:5}
   valid:
     token: ${TOKEN:0}
-
+confluence:
+  url: "https://confluence.unidata-platform.com"
 jira:
   url: "https://jira.unidata-platform.com"
   auth:
@@ -52,6 +53,9 @@ jira:
           paragraph: "${jira.paragraph.font.size}*Новые функции и исправления*"
           paragraph_external: "${jira.paragraph.font.size}*Новые функции и исправления (Версия для заказчика)*"
           default: "*{color:#FF0000}Не заполнено{color}*"
+        confluence-page-change:
+          paragraph: "${jira.paragraph.font.size}*Список измененных страниц в Confluence*"
+          default: "*{color:#FF0000}Изменения не найдены{color}*"
         deploy-instruction:
           start: "${jira.start.font.size}Порядок установки:"
           paragraph: "${jira.paragraph.font.size}*Порядок установки и изменения настроек*"

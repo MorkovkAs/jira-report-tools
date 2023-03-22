@@ -1,6 +1,6 @@
 package ru.morkovka.report.entity.dto
 
-data class FieldsDto(
+data class JiraFieldsDto(
     val summary: String,
     val status: HashMap<String, Any>?,
     val description: String?,

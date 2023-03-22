@@ -29,23 +29,16 @@ $ ./gradlew build
 $ ./gradlew bootRun
 or 
 $ ./gradlew bootJar
-$ nohup java -jar report-service-0.3.0.jar > /dev/null 2>&1 &
-$ nohup java -jar -DLogback.configurationFile=logback.xml report-service-0.3.0.jar > /dev/null 2>&1 &
+$ nohup java -jar report-service-0.4.0.jar > /dev/null 2>&1 &
+$ nohup java -jar -DLogback.configurationFile=logback.xml report-service-0.4.0.jar > /dev/null 2>&1 &
+or
+$ docker compose up -d
 ```
-Go to [localhost](http://localhost:8080) page.
+Go to [localhost](http://localhost:8081) page.
 
 ## Modules
 1. `report-service` containing server side logic such as request processing, Jira integration, generating release notes. [Details](report-service/README.md)
 2. `report-service-ui` containing client side logic. [Details](report-service-ui/README.md)
-
-## To do list
-* [x] commit `report-service` package with server side
-* [x] commit `report-service-ui` package with basic implementation of a client side on Vue.js
-* [x] upgrade client side to support sending requests of all types
-* [x] conversion of the release notes, in accordance with our project template
-* [x] deploy
-* [ ] creating confluence pages with release info
-* [ ] some cool things:)
 
 ## Thanks!
 Any questions or problems give me a shout on email avklimakov@gmail.com

@@ -17,6 +17,7 @@ class ReleaseController(
         @RequestParam(value = "jiraProject", required = true) jiraProject: String,
         @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
         @RequestParam(value = "releaseNumber", required = true) releaseNumber: String,
+        @RequestParam(value = "lastReleaseDate", required = false) lastReleaseDate: String?,
         @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
     ): MutableMap<String, MutableList<String>> = releaseService.getTasksTestingAndDeployInfoByJiraRelease(jiraProject, jiraRelease, limit)
 
@@ -25,6 +26,7 @@ class ReleaseController(
         @RequestParam(value = "jiraProject", required = true) jiraProject: String,
         @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
         @RequestParam(value = "releaseNumber", required = true) releaseNumber: String,
+        @RequestParam(value = "lastReleaseDate", required = false) lastReleaseDate: String?,
         @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
     ): ReleaseNote = releaseService.getReleaseNoteByJiraRelease(jiraProject, jiraRelease, limit)
 
@@ -33,6 +35,7 @@ class ReleaseController(
         @RequestParam(value = "jiraProject", required = true) jiraProject: String,
         @RequestParam(value = "jiraRelease", required = true) jiraRelease: String,
         @RequestParam(value = "releaseNumber", required = true) releaseNumber: String,
+        @RequestParam(value = "lastReleaseDate", required = true) lastReleaseDate: String,
         @RequestParam(value = "limit", defaultValue = "\${jira.search.default.limit}") limit: Int
-    ): String = releaseService.getReleaseNoteToString(jiraProject, jiraRelease, releaseNumber, limit)
+    ): String = releaseService.getReleaseNoteToString(jiraProject, jiraRelease, releaseNumber, lastReleaseDate, limit)
 }

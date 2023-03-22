@@ -1,6 +1,6 @@
 package ru.morkovka.report.entity.dto
 
-data class SearchResultDto(
+data class SearchJiraResultDto(
     val expand: String,
     val startAt: Int,
     val maxResults: Int,

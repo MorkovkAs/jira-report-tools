@@ -31,6 +31,6 @@ COPY --from=build app/report-service/build/libs/report-service-*.jar /app/report
 
 WORKDIR /app
 
-EXPOSE 8080/tcp
+EXPOSE 8081/tcp
 
 CMD java -jar report-service.jar

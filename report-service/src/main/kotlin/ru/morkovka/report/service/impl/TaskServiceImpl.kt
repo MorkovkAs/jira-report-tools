@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import ru.morkovka.report.entity.Task
-import ru.morkovka.report.entity.dto.SearchResultDto
+import ru.morkovka.report.entity.dto.SearchJiraResultDto
 import ru.morkovka.report.entity.mapper.TaskMapper.Companion.getTask
 import ru.morkovka.report.service.TaskService
 import java.util.*
@@ -50,8 +50,8 @@ class TaskServiceImpl(
         )
 
         logger.info("getTasksByJqlString [jqlString = $jqlString]: jira search completed")
-        val searchResultDto = Gson().fromJson(response.body, SearchResultDto::class.java)
-        val taskDtoList = searchResultDto.issues
+        val searchJiraResultDto = Gson().fromJson(response.body, SearchJiraResultDto::class.java)
+        val taskDtoList = searchJiraResultDto.issues
         val taskList = taskDtoList.stream().filter(Objects::nonNull).map { getTask(it, jiraUrl) }.collect(Collectors.toList())
         logger.info("getTasksByJqlString [jqlString = $jqlString]: casting to List<Task> completed")
 

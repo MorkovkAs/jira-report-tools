@@ -9,6 +9,7 @@ import ru.morkovka.report.CommentProperties
 import ru.morkovka.report.entity.ReleaseNote
 import ru.morkovka.report.entity.Task
 import ru.morkovka.report.entity.TaskFeature
+import ru.morkovka.report.service.ConfluencePageService
 import ru.morkovka.report.service.ReleaseService
 import ru.morkovka.report.utils.TaskUtils.Companion.sortByJiraKey
 import java.util.*
@@ -50,6 +51,9 @@ class ReleaseServiceImpl(
     @Autowired
     private lateinit var taskServiceImpl: TaskServiceImpl
 
+    @Autowired
+    private lateinit var confluencePageService: ConfluencePageService
+
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     /**
@@ -70,8 +74,8 @@ class ReleaseServiceImpl(
         val taskList = taskServiceImpl.getTasksByJiraRelease(jiraProject, jiraFixVersion, limit)
 
         commentsMap = mergeMaps(
-            getCommentsFromTaskListByKeyword(taskList, commentProperties.testCase.start),
-            getCommentsFromTaskListByKeyword(taskList, commentProperties.deployInstruction.start)
+            getCommentsFromTaskListByKeyword(taskList, commentProperties.testCase.start!!),
+            getCommentsFromTaskListByKeyword(taskList, commentProperties.deployInstruction.start!!)
         )
 
         logger.info("getTasksTestingAndDeployInfoByJiraRelease [jiraFixVersion = $jiraFixVersion]: jira search completed")
@@ -102,11 +106,12 @@ class ReleaseServiceImpl(
      * @param jiraProject the code of the jira project to search by. For example "DM"
      * @param jiraFixVersion the code of the jira release to search by. For example "offline-merge-1.37.0"
      * @param releaseNumber only the number of release. For example "1.37.0"
+     * @param lastReleaseDate the date from the last release to search changed confluence pages
      * @param limit on the number of returned issues from Jira
      * @return the String contains
      */
 
-    override fun getReleaseNoteToString(jiraProject: String, jiraFixVersion: String, releaseNumber: String, limit: Int): String {
+    override fun getReleaseNoteToString(jiraProject: String, jiraFixVersion: String, releaseNumber: String, lastReleaseDate: String, limit: Int): String {
         val note = getReleaseNoteByJiraRelease(jiraProject, jiraFixVersion, limit)
 
         logger.info("releaseNoteToString [jiraFixVersion = $jiraFixVersion]: convertation started")
@@ -138,6 +143,11 @@ ${stringFromFeatures(
 ${commentProperties.newFeature.paragraph_external}
 ${stringFromFeatures(
     note.features, commentProperties.newFeature.default, isForUs = false
+)}
+      
+${commentProperties.confluencePageChange.paragraph}
+${stringFromConfluencePages(
+    jiraFixVersion, lastReleaseDate, limit, commentProperties.newFeature.default
 )}
                 
 ${commentProperties.deployInstruction.paragraph}
@@ -209,15 +219,15 @@ ${stringFromMapWithoutTaskKeys(
 
         val note = ReleaseNote(
             taskInKey = taskIn?.key ?: "",
-            sourceCode = getCommentsFromTaskListByKeyword(taskList, commentProperties.sourceCode.start),
-            artifact = getCommentsFromTaskListByKeyword(taskList, commentProperties.artifact.start),
+            sourceCode = getCommentsFromTaskListByKeyword(taskList, commentProperties.sourceCode.start!!),
+            artifact = getCommentsFromTaskListByKeyword(taskList, commentProperties.artifact.start!!),
             features = features,
-            dbChanges = getCommentsFromTaskListByKeyword(taskList, commentProperties.databaseChange.start),
-            monitoringChanges = getCommentsFromTaskListByKeyword(taskList, commentProperties.monitoringChange.start),
-            configs = getCommentsFromTaskListByKeyword(taskList, commentProperties.config.start),
-            deploy = getCommentsFromTaskListByKeyword(taskList, commentProperties.deployInstruction.start),
-            testCase = getCommentsFromTaskListByKeyword(taskList, commentProperties.testCase.start),
-            rollback = getCommentsFromTaskListByKeyword(taskList, commentProperties.rollbackAction.start)
+            dbChanges = getCommentsFromTaskListByKeyword(taskList, commentProperties.databaseChange.start!!),
+            monitoringChanges = getCommentsFromTaskListByKeyword(taskList, commentProperties.monitoringChange.start!!),
+            configs = getCommentsFromTaskListByKeyword(taskList, commentProperties.config.start!!),
+            deploy = getCommentsFromTaskListByKeyword(taskList, commentProperties.deployInstruction.start!!),
+            testCase = getCommentsFromTaskListByKeyword(taskList, commentProperties.testCase.start!!),
+            rollback = getCommentsFromTaskListByKeyword(taskList, commentProperties.rollbackAction.start!!)
         )
 
         logger.info("getReleaseNoteFromTaskList [taskList = $taskList]: ReleaseNote creation completed")
@@ -266,6 +276,21 @@ ${stringFromMapWithoutTaskKeys(
         } else {
             defaultValue
         }
+    }
+
+    private fun stringFromConfluencePages(jiraFixVersion: String, lastReleaseDate: String, limit: Int, defaultValue: String): String {
+        val pageList = confluencePageService.getChangedPagesByJiraRelease(jiraFixVersion, lastReleaseDate, limit = limit)
+
+        if (pageList.isEmpty()) {
+            return defaultValue
+        }
+
+        var s = "||Название страницы||Ссылка||Последнее изменение||"
+
+        pageList.forEach { page ->
+            s += "\n|${page.title}|${page.link}|${page.lastModified}|"
+        }
+        return s
     }
 
     /**

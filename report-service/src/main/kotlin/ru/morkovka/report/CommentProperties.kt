@@ -9,6 +9,7 @@ data class CommentProperties(
     val sourceCode: Type,
     val artifact: Type,
     val newFeature: Type,
+    val confluencePageChange: Type,
     val databaseChange: Type,
     val monitoringChange: Type,
     val config: Type,
@@ -17,7 +18,7 @@ data class CommentProperties(
     val rollbackAction: Type
 ) {
     data class Type(
-        val start: String,
+        val start: String?,
         val paragraph: String,
         val paragraph_external: String?,
         val default: String

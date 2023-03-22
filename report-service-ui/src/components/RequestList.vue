@@ -20,10 +20,20 @@
                                 {{ option.text }}
                             </option>
                         </select>
-                        <input v-model="requestKey" v-bind:disabled=!requestTypeSelected :placeholder="[[ searchParamType ]]">
+                        <input v-model="requestKey" v-bind:disabled=!requestTypeSelected :placeholder="[[ searchParamType ]]" style="width: 50px">
                     </p>
                     <p>
-                        <label> Project Code:
+                      <label for="example-datepicker">Last release date: </label>
+                      <date-picker v-model="lastReleaseDate"
+                                     v-bind:disabled=!requestTypeSelected
+                                     format="YYYY-MM-DD"
+                                     value-type="format"
+                                     type="date"
+                                     style="height: 10px; width: 150px">
+                        </date-picker>
+                    </p>
+                    <p>
+                        <label> Project code:
                             <input v-model="projectCode" disabled style=" width: 60px; margin: 0px">
                         </label>
                     </p>
@@ -95,13 +105,16 @@
     import Issue from './Issue.vue'
     import Error from './Error.vue'
     //import Recaptcha from 'vue-recaptcha';
-    import axios from "axios"
+    import axios from "axios";
+    import DatePicker from 'vue2-datepicker';
+    import 'vue2-datepicker/index.css';
 
     export default {
         name: "JiraRequests",
         components: {
             Issue,
-            Error//,
+            Error,
+            DatePicker//,
             //Recaptcha
         },
 
@@ -112,6 +125,7 @@
                 requestLimit: 15,
                 projectCode: 'DMKZD',
                 token: '',
+                lastReleaseDate: this.createDate(-14,0,0),
                 requestTypeSelected: 'getReleaseNotesString',
                 requestOptions: [
                     {
@@ -143,7 +157,7 @@
                         url: '/api/release/getReleaseNoteString?jiraRelease='
                     }
                 ],
-                releasesSelected: 'offline-merge',
+                releasesSelected: 'kzd2',
                 releasesOptions: [{
                   text: 'Offline Merge',
                   key: 'offline-merge',
@@ -210,6 +224,7 @@
                     let releaseCode = this.releasesOptions.find(item => item.key === this.releasesSelected);
                     resultUrl += releaseCode.value + this.requestKey
                     resultUrl += '&jiraProject=' + this.projectCode + '&limit=' + this.requestLimit + '&releaseNumber=' + this.requestKey
+                    resultUrl += '&lastReleaseDate='+ this.lastReleaseDate
                 }
 
                 this.firstRequestSend = true;
@@ -243,26 +258,34 @@
             },
 
             copyResponse: function () {
-              if (navigator.clipboard && window.isSecureContext) {
-                // navigator clipboard api method'
-                return navigator.clipboard.writeText(this.response);
-              } else {
-                // text area method
-                let textArea = document.createElement("textarea");
-                textArea.value = this.response;
-                // make the textarea out of viewport
-                textArea.style.position = "fixed";
-                textArea.style.left = "-999999px";
-                textArea.style.top = "-999999px";
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                return new Promise((res, rej) => {
-                  // here the magic happens
-                  document.execCommand('copy') ? res() : rej();
-                  textArea.remove();
-                });
-              }
+                if (navigator.clipboard && window.isSecureContext) {
+                    // navigator clipboard api method'
+                    return navigator.clipboard.writeText(this.response);
+                } else {
+                    // text area method
+                    let textArea = document.createElement("textarea");
+                    textArea.value = this.response;
+                    // make the textarea out of viewport
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-999999px";
+                    textArea.style.top = "-999999px";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    return new Promise((res, rej) => {
+                        // here the magic happens
+                        document.execCommand('copy') ? res() : rej();
+                        textArea.remove();
+                    });
+                }
+            },
+
+            createDate: function (days, months, years) {
+                let date = new Date();
+                date.setDate(date.getDate() + days);
+                date.setMonth(date.getMonth() + months);
+                date.setFullYear(date.getFullYear() + years);
+                return date.toISOString().split('T')[0];
             }
         }
     }
@@ -273,14 +296,16 @@
         width: 100px;
         height: 20px;
         vertical-align: center;
-        margin: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
     }
 
     select {
         border: 1px solid #ccc;
         vertical-align: center;
         height: 20px;
-        margin: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
         cursor: pointer;
     }
 

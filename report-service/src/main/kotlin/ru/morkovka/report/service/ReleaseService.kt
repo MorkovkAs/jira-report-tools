@@ -8,5 +8,5 @@ interface ReleaseService {
 
     fun getReleaseNoteByJiraRelease(jiraProject: String, jiraFixVersion: String, limit: Int): ReleaseNote
 
-    fun getReleaseNoteToString(jiraProject: String, jiraFixVersion: String, releaseNumber: String, limit: Int): String
+    fun getReleaseNoteToString(jiraProject: String, jiraFixVersion: String, releaseNumber: String, lastReleaseDate: String, limit: Int): String
 }
